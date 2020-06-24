@@ -7,11 +7,14 @@ export default createGlobalStyle`
   padding: 0;
   box-sizing: border-box;
   outline: 0;
+  text-decoration: none;
+  text-decoration-color: none;
 }
 
 body {
 background: #312E38;
 color: #fff;
+text-decoration: none;
 -webkit-font-smoothing: antialiased;
 }
 

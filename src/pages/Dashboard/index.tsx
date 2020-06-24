@@ -5,6 +5,7 @@ import ptBR from 'date-fns/locale/pt-BR';
 import DayPicker, { DayModifiers } from 'react-day-picker';
 import 'react-day-picker/lib/style.css';
 import { FiPower, FiClock } from 'react-icons/fi';
+import { FaCrown } from 'react-icons/fa';
 import {
   Container,
   Header,
@@ -138,10 +139,18 @@ const Dashboard: React.FC = () => {
     <Container>
       <Header>
         <HeaderContent>
-          <img src={logoImg} alt="GoBarber" />
-
+          {/* <img src={logoImg} alt="GoBarber" /> */}
+          <Link to="/">
+            <h1>iAderência</h1>
+          </Link>
+          <button type="button" onClick={signOut}>
+            <FiPower />
+          </button>
           <Profile>
-            <img src={user.avatar_url} alt={user.name} />
+            <img
+              src="https://avatars1.githubusercontent.com/u/24507574?s=460&u=59d56dda6d58cd54a0981d5ed6ea5d3f2dba0e81&v=4"
+              alt={user.name}
+            />
             <div>
               <span>Bem vindo,</span>
               <Link to="/profile">
@@ -149,39 +158,109 @@ const Dashboard: React.FC = () => {
               </Link>
             </div>
           </Profile>
-          <button type="button" onClick={signOut}>
-            <FiPower />
-          </button>
         </HeaderContent>
       </Header>
       <Content>
         <Schedule>
-          <h1>Horários agendados</h1>
+          <h1>Ranking Gerentes de Projetos</h1>
           <p>
             {isToday(selectedDate) && <span>Hoje</span>}
             <span>{selectedDateasText}</span>
             <span>{selectedWeekDay}</span>
           </p>
 
-          {isToday(selectedDate) && nextAppointment && (
-            <NextAppointment>
-              <strong>Agendamento a seguir</strong>
-              <div>
-                <img
-                  src={nextAppointment.user.avatar_url}
-                  alt={nextAppointment.user.name}
-                />
-                <strong>{nextAppointment.user.name}</strong>
-                <span>
-                  <FiClock />
-                  {nextAppointment.hourFormatted}
-                </span>
-              </div>
-            </NextAppointment>
-          )}
+          <NextAppointment>
+            <strong>Top 3</strong>
+            <div>
+              <Link to="/score">
+                <div>
+                  <FaCrown size={28} color="#f1c40f" />
+                  <img
+                    src="https://avatars1.githubusercontent.com/u/24507574?s=460&u=59d56dda6d58cd54a0981d5ed6ea5d3f2dba0e81&v=4"
+                    alt="teste"
+                  />
+                  <strong>Wolgrand</strong>
+                  <span>1200 pts</span>
+                </div>
+              </Link>
+              <Link to="/score">
+                <div>
+                  <FaCrown size={28} color="#95a5a6" />
+                  <img
+                    src="https://avatars1.githubusercontent.com/u/24507574?s=460&u=59d56dda6d58cd54a0981d5ed6ea5d3f2dba0e81&v=4"
+                    alt="teste"
+                  />
+                  <strong>Wolgrand</strong>
+                  <span>1200 pts</span>
+                </div>
+              </Link>
+              <Link to="/score">
+                <div>
+                  <FaCrown size={28} color="#e67e22" />
+                  <img
+                    src="https://avatars1.githubusercontent.com/u/24507574?s=460&u=59d56dda6d58cd54a0981d5ed6ea5d3f2dba0e81&v=4"
+                    alt="teste"
+                  />
+                  <strong>Wolgrand</strong>
+                  <span>1200 pts</span>
+                </div>
+              </Link>
+            </div>
+          </NextAppointment>
 
           <Section>
-            <strong>Manhã</strong>
+            <strong>Top 10</strong>
+            <Link to="/score">
+              <Appointment key="1">
+                <span>1º</span>
+
+                <div>
+                  <img
+                    src="https://avatars1.githubusercontent.com/u/24507574?s=460&u=59d56dda6d58cd54a0981d5ed6ea5d3f2dba0e81&v=4"
+                    alt="teste"
+                  />
+                  <strong>Wolgrand</strong>
+                  <span>1200 pts</span>
+                </div>
+              </Appointment>
+            </Link>
+
+            <Appointment key="2">
+              <span>2º</span>
+
+              <div>
+                <img
+                  src="https://avatars1.githubusercontent.com/u/24507574?s=460&u=59d56dda6d58cd54a0981d5ed6ea5d3f2dba0e81&v=4"
+                  alt="teste"
+                />
+                <strong>Wolgrand</strong>
+                <span>1200 pts</span>
+              </div>
+            </Appointment>
+            <Appointment key="3">
+              <span>3º</span>
+
+              <div>
+                <img
+                  src="https://avatars1.githubusercontent.com/u/24507574?s=460&u=59d56dda6d58cd54a0981d5ed6ea5d3f2dba0e81&v=4"
+                  alt="teste"
+                />
+                <strong>Wolgrand</strong>
+                <span>1200 pts</span>
+              </div>
+            </Appointment>
+            <Appointment key="4">
+              <span>10º</span>
+
+              <div>
+                <img
+                  src="https://avatars1.githubusercontent.com/u/24507574?s=460&u=59d56dda6d58cd54a0981d5ed6ea5d3f2dba0e81&v=4"
+                  alt="teste"
+                />
+                <strong>Wolgrand</strong>
+                <span>1200 pts</span>
+              </div>
+            </Appointment>
 
             {morningAppointments.length === 0 && (
               <p>Nenhum agendamento neste período</p>
@@ -204,60 +283,24 @@ const Dashboard: React.FC = () => {
               </Appointment>
             ))}
           </Section>
-
-          <Section>
-            <strong>Tarde</strong>
-
-            {afternoonAppointments.length === 0 && (
-              <p>Nenhum agendamento neste período</p>
-            )}
-
-            {afternoonAppointments.map((appointment) => (
-              <Appointment key={appointment.id}>
-                <span>
-                  <FiClock />
-                  {appointment.hourFormatted}
-                </span>
-
-                <div>
-                  <img
-                    src={appointment.user.avatar_url}
-                    alt={appointment.user.name}
-                  />
-                  <strong>{appointment.user.name}</strong>
-                </div>
-              </Appointment>
-            ))}
-          </Section>
         </Schedule>
 
-        <Calendar>
-          <DayPicker
-            weekdaysShort={['D', 'S', 'T', 'Q', 'Q', 'S', 'S']}
-            fromMonth={new Date()}
-            disabledDays={[{ daysOfWeek: [0, 6] }, ...disabledDays]}
-            modifiers={{
-              available: { daysOfWeek: [1, 2, 3, 4, 5] },
-            }}
-            onMonthChange={handleMonthChange}
-            selectedDays={selectedDate}
-            onDayClick={handleDateChange}
-            months={[
-              'Janeiro',
-              'Fevereiro',
-              'Março',
-              'Abril',
-              'Maio',
-              'Junho',
-              'Julho',
-              'Agosto',
-              'Setembro',
-              'Outubro',
-              'Novembro',
-              'Dezembro',
-            ]}
-          />
-        </Calendar>
+        {/* <Calendar>
+          <Appointment key="1">
+            <span>
+              <FiClock />
+              08:00
+            </span>
+
+            <div>
+              <img
+                src="https://avatars1.githubusercontent.com/u/24507574?s=460&u=59d56dda6d58cd54a0981d5ed6ea5d3f2dba0e81&v=4"
+                alt="wolgrand"
+              />
+              <strong>Wolgrand</strong>
+            </div>
+          </Appointment>
+        </Calendar> */}
       </Content>
     </Container>
   );
