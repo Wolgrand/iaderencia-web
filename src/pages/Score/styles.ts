@@ -192,11 +192,12 @@ export const Section = styled.section`
     }
 
     button {
-      width: 20%;
+      width: 10%;
       height: 26px;
       background: #312e38;
       color: #f4ede8;
       margin-top: 0px;
+      padding: 0;
 
       svg {
         width: 20px;
@@ -206,6 +207,11 @@ export const Section = styled.section`
       &:hover {
         opacity: 0.8;
         background: transparent;
+      }
+      .selected {
+        opacity: 0.9;
+        border: 2px solid #ff9000;
+        color: #ff9000;
       }
     }
   }

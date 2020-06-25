@@ -14,6 +14,7 @@ export const Content = styled.div`
   place-content: center;
   width: 100%;
   max-width: 700px;
+  margin: 0 auto;
 `;
 
 const appearFromLeft = keyframes`
@@ -34,14 +35,18 @@ export const AnimationContainer = styled.div`
   justify-content: center;
 
   animation: ${appearFromLeft} 1s;
+  > h1 {
+    font-size: 48px;
+  }
 
   form {
-    margin: 80px 0;
+    margin: 50px 0;
     width: 340px;
     text-align: center;
 
     h1 {
       margin-bottom: 24px;
+      color: #ff9000;
     }
 
     a {

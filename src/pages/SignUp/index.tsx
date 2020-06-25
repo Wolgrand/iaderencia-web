@@ -71,10 +71,9 @@ const SignUp: React.FC = () => {
   );
   return (
     <Container>
-      <Background />
       <Content>
         <AnimationContainer>
-          <img src={logoImg} alt="Go Barber" />
+          <h1>iAderência</h1>
           <Form ref={formRef} onSubmit={handleSubmit}>
             <h1>Faça seu cadastro</h1>
 

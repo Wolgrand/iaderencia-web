@@ -14,6 +14,7 @@ export const Content = styled.div`
   place-content: center;
   width: 100%;
   max-width: 700px;
+  margin: 0 auto;
 `;
 
 const appearFromRight = keyframes`
@@ -35,6 +36,10 @@ export const AnimationContainer = styled.div`
 
   animation: ${appearFromRight} 1s;
 
+  > h1 {
+    font-size: 48px;
+  }
+
   form {
     margin: 50px 0;
     width: 340px;
@@ -42,6 +47,7 @@ export const AnimationContainer = styled.div`
 
     h1 {
       margin-bottom: 24px;
+      color: #ff9000;
     }
 
     a {
