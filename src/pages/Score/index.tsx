@@ -1,17 +1,14 @@
-import React, {
-  useState,
-  useCallback,
-  useEffect,
-  useMemo,
-  ChangeEvent,
-} from 'react';
+import React, { useState, useEffect, useMemo, ChangeEvent } from 'react';
 
-import { Link, useLocation } from 'react-router-dom';
-import { isToday, format, parseISO, isAfter } from 'date-fns';
+import { Link, useLocation, useParams, useHistory } from 'react-router-dom';
+import { isToday, format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 import 'react-day-picker/lib/style.css';
-import { FiPower, FiArrowUpCircle } from 'react-icons/fi';
+import { FiPower } from 'react-icons/fi';
 import Icon from '@material-ui/core/Icon';
+import { useToast } from '../../hooks/toast';
+import ToggleSwitch from '../../components/ToggleSwitch';
+import ToggleSwitchDisabled from '../../components/ToggleSwitchDisabled';
 
 import {
   Container,
@@ -23,11 +20,9 @@ import {
   Calendar,
   Section,
   Avatar,
-  Form,
   ItemsGrid,
 } from './styles';
 
-import logoImg from '../../assets/logo.svg';
 import { useAuth } from '../../hooks/auth';
 import api from '../../services/api';
 import Button from '../../components/Button';
@@ -38,6 +33,10 @@ interface MonthAvailabilityItem {
   available: boolean;
 }
 
+interface Criterias {
+  id: string;
+}
+
 interface Criteria {
   id: string;
   score: number;
@@ -46,57 +45,50 @@ interface Criteria {
 }
 
 interface Player {
-  id: number;
+  id: string;
   name: string;
   score: number;
   avatar_url: string;
 }
 
-interface Appointment {
-  id: number;
-  date: string;
-  hourFormatted: string;
-  user: {
-    name: string;
-    avatar_url: string;
-  };
-}
-
 const Score: React.FC = () => {
   const { signOut, user } = useAuth();
   const location = useLocation();
+  const { addToast } = useToast();
+  const history = useHistory();
 
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+
   const [score, setScore] = useState(0);
+  const [multipliedScore, setMultipliedScore] = useState(0);
+  const [toggleDisabled, setToggleDisabled] = useState(false);
+
   const [selectedMultiply, setSelectedMultiply] = useState(false);
   const [player, setPlayer] = useState<Player | undefined>();
   const [criterias, setCriterias] = useState<Criteria[]>([]);
 
   const [selectedCriteria, setSelectedCriteria] = useState<string[]>([]);
 
-  const [monthAvailability, setMonthAvailability] = useState<
-    MonthAvailabilityItem[]
-  >([]);
-
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const rank = location.search.split('?rank=');
+  const { id } = useParams();
 
   useEffect(() => {
-    const url = location.pathname.split('/score/');
-
-    const user_id = url[1];
-
-    api.get(`/players/${user_id}`).then((response) => {
+    api.get(`/players/${id}`).then((response) => {
       setPlayer(response.data);
     });
-  }, [location.pathname]);
+  }, [id]);
 
   useEffect(() => {
     api.get(`/criterias/`).then((response) => {
       setCriterias(response.data);
     });
   }, []);
+
+  useEffect(() => {
+    setMultipliedScore(score * 1.5);
+
+    score === 0 ? setSelectedMultiply(false) : setToggleDisabled(true);
+  }, [score]);
 
   const selectedDateasText = useMemo(() => {
     return format(selectedDate, " 'Dia' dd 'de' MMMM", {
@@ -111,46 +103,49 @@ const Score: React.FC = () => {
   }, [selectedDate]);
 
   const handleSelectItem = (id: string, selectedScore: number): void => {
-    const alreadySelected = selectedItems.findIndex((item) => item === id);
+    const alreadySelected = selectedCriteria.findIndex((item) => item === id);
 
     if (alreadySelected >= 0) {
-      const filteredItems = selectedItems.filter((item) => item !== id);
-      setSelectedItems(filteredItems);
+      const filteredItems = selectedCriteria.filter((item) => item !== id);
+      setSelectedCriteria(filteredItems);
       if (score > 0) {
         setScore(score - selectedScore);
+        setMultipliedScore(Math.ceil(score * 1.5));
       }
     } else {
-      setSelectedItems([...selectedItems, id]);
+      setSelectedCriteria([...selectedCriteria, id]);
       setScore(score + selectedScore);
+      setMultipliedScore(Math.ceil(score * 1.5));
     }
   };
 
-  const handleMultiply = (): void => {
-    console.log(selectedItems.length);
+  const toggleMultiply = (): void => {
     setSelectedMultiply(!selectedMultiply);
+  };
+  const handleSave = (): void | undefined => {
+    const newScore = selectedMultiply === true ? multipliedScore : score;
+    const data = {
+      user_id: id,
+      newScore,
+      criterias: selectedCriteria,
+    };
 
-    if (selectedItems.length > 0) {
-      if (selectedMultiply === false && score > 0) {
-        const multipliedScore = score * 1.5;
-        setScore(multipliedScore);
-        console.log('o valor vai aumentar');
-      }
+    console.log(data);
+    api.post('/transactions', data).then((response) => {
+      addToast({
+        type: 'success',
+        title: 'Pontuação Atualizada',
+        description: `Pontuação de ${player?.name} foi atualizada com sucesso!`,
+      });
 
-      if (selectedMultiply === true && score > 0) {
-        const multipliedScore = score / 1.5;
-        setScore(multipliedScore);
-        console.log('o valor vai diminuir');
-      }
-    } else {
-      setScore(0);
-    }
+      history.push('/dashboard');
+    });
   };
 
   return (
     <Container>
       <Header>
         <HeaderContent>
-          {/* <img src={logoImg} alt="GoBarber" /> */}
           <Link to="/">
             <h1>iAderência</h1>
           </Link>
@@ -181,12 +176,12 @@ const Score: React.FC = () => {
                 <img src={avatarDefaultImg} alt="avatar" />
               )}
 
-              <span>1</span>
+              <span>{rank}</span>
               <strong>{player ? player.name : ''}</strong>
               <p>{player ? player.score : ''} pts</p>
 
               <section>
-                <span>Recompensas</span>
+                <span>Conquistas</span>
                 <ul>
                   <li />
                   <li />
@@ -213,7 +208,6 @@ const Score: React.FC = () => {
 
               <section>
                 <br />
-                <span>Conquistas</span>
               </section>
             </div>
           </Avatar>
@@ -230,15 +224,23 @@ const Score: React.FC = () => {
           <Section>
             <strong>
               Selecionar Critério
-              <p>Pontuação: {score}</p>
-              <Button
-                type="submit"
-                onClick={handleMultiply}
-                className={selectedMultiply === true ? 'selected' : ''}
-              >
-                x 1,5
+              {selectedMultiply === true ? (
+                <p>Pontuação: {Math.ceil(multipliedScore)}</p>
+              ) : (
+                <p>Pontuação: {score}</p>
+              )}
+              <div>
+                {score > 0 ? (
+                  <ToggleSwitch toggleMultiply={toggleMultiply} />
+                ) : (
+                  <ToggleSwitchDisabled toggleMultiply={toggleMultiply} />
+                )}
+
+                <p>1,5x</p>
+              </div>
+              <Button type="submit" onClick={handleSave}>
+                Salvar
               </Button>
-              <Button type="submit">Salvar</Button>
             </strong>
 
             <ItemsGrid>
@@ -247,7 +249,7 @@ const Score: React.FC = () => {
                   key={criteria.id}
                   onClick={() => handleSelectItem(criteria.id, criteria.score)}
                   className={
-                    selectedItems.includes(criteria.id) ? 'selected' : ''
+                    selectedCriteria.includes(criteria.id) ? 'selected' : ''
                   }
                 >
                   <Icon>{criteria.icon}</Icon>

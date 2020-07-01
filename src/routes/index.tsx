@@ -17,7 +17,7 @@ const Routes: React.FC = () => (
     <Route path="/signup" component={SignUp} />
     <Route path="/forgot-password" component={ForgotPassword} />
     <Route path="/reset-password" component={ResetPassword} />
-    <Route path="/score" component={Score} isPrivate />
+    <Route path="/score/:id" component={Score} isPrivate />
     <Route path="/dashboard" component={Dashboard} isPrivate />
     <Route path="/profile" component={Profile} isPrivate />
   </Switch>

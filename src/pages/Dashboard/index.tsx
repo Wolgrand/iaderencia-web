@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { isToday, format, parseISO, isAfter } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 import DayPicker, { DayModifiers } from 'react-day-picker';
@@ -32,6 +32,7 @@ interface Player {
   name: string;
   score: number;
   avatar_url: string;
+  rank: number;
 }
 
 const Dashboard: React.FC = () => {
@@ -40,10 +41,15 @@ const Dashboard: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const [players, setPlayers] = useState<Player[]>([]);
+  const [top3, setTop3] = useState<Player[]>([]);
 
   useEffect(() => {
     api.get(`/rank`).then((response) => {
       setPlayers(response.data);
+    });
+
+    api.get(`/top3`).then((response) => {
+      setTop3(response.data);
     });
   }, []);
 
@@ -95,49 +101,40 @@ const Dashboard: React.FC = () => {
 
           <NextAppointment>
             <strong>Top 3</strong>
+
             <div>
-              <Link to="/score">
-                <div>
-                  <FaCrown size={28} color="#f1c40f" />
-                  <img
-                    src="https://avatars1.githubusercontent.com/u/24507574?s=460&u=59d56dda6d58cd54a0981d5ed6ea5d3f2dba0e81&v=4"
-                    alt="teste"
-                  />
-                  <strong>Wolgrand</strong>
-                  <span>1200 pts</span>
+              {top3.map((item) => (
+                <div key={item.id}>
+                  {item.rank === 1 ? (
+                    <FaCrown size={28} color="#f1c40f" />
+                  ) : null}
+                  {item.rank === 2 ? (
+                    <FaCrown size={28} color="#95a5a6" />
+                  ) : null}
+                  {item.rank === 3 ? (
+                    <FaCrown size={28} color="#e67e22" />
+                  ) : null}
+                  {item.avatar_url ? (
+                    <img src={user.avatar_url} alt={user.name} />
+                  ) : (
+                    <img src={avatarDefaultImg} alt={user.name} />
+                  )}
+                  <strong>{item.name}</strong>
+                  <span>{item.score} pts</span>
                 </div>
-              </Link>
-              <Link to="/score">
-                <div>
-                  <FaCrown size={28} color="#95a5a6" />
-                  <img
-                    src="https://avatars1.githubusercontent.com/u/24507574?s=460&u=59d56dda6d58cd54a0981d5ed6ea5d3f2dba0e81&v=4"
-                    alt="teste"
-                  />
-                  <strong>Wolgrand</strong>
-                  <span>1200 pts</span>
-                </div>
-              </Link>
-              <Link to="/score">
-                <div>
-                  <FaCrown size={28} color="#e67e22" />
-                  <img
-                    src="https://avatars1.githubusercontent.com/u/24507574?s=460&u=59d56dda6d58cd54a0981d5ed6ea5d3f2dba0e81&v=4"
-                    alt="teste"
-                  />
-                  <strong>Wolgrand</strong>
-                  <span>1200 pts</span>
-                </div>
-              </Link>
+              ))}
             </div>
           </NextAppointment>
 
           <Section>
             <strong>Top 10</strong>
             {players.map((player) => (
-              <Link to={`/score/${player.id}`}>
+              <Link
+                to={`/score/${player.id}?rank=${player.rank}`}
+                key={player.id}
+              >
                 <Appointment key={player.id}>
-                  <span>1º</span>
+                  <span>{player.rank}º</span>
 
                   <div>
                     {player.avatar_url ? (
