@@ -1,10 +1,10 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { isToday, format, parseISO, isAfter } from 'date-fns';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import { isToday, format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
-import DayPicker, { DayModifiers } from 'react-day-picker';
+
 import 'react-day-picker/lib/style.css';
-import { FiPower, FiClock } from 'react-icons/fi';
+import { FiPower, FiSettings } from 'react-icons/fi';
 import { FaCrown } from 'react-icons/fa';
 import {
   Container,
@@ -72,10 +72,13 @@ const Dashboard: React.FC = () => {
           <Link to="/">
             <h1>iAderência</h1>
           </Link>
-          <button type="button" onClick={signOut}>
-            <FiPower />
-          </button>
+          <button type="button" />
+
           <Profile>
+            <button type="button" onClick={signOut}>
+              <FiSettings />
+            </button>
+
             {user.avatar_url ? (
               <img src={user.avatar_url} alt={user.name} />
             ) : (
@@ -87,6 +90,9 @@ const Dashboard: React.FC = () => {
                 <strong>{user.name}</strong>
               </Link>
             </div>
+            <button type="button" onClick={signOut}>
+              <FiPower />
+            </button>
           </Profile>
         </HeaderContent>
       </Header>

@@ -8,8 +8,7 @@ import { Link } from 'react-router-dom';
 import { useToast } from '../../hooks/toast';
 import getValidationsErrors from '../../utils/getValidationsErrors';
 
-import { Container, Content, AnimationContainer, Background } from './styles';
-import logoImg from '../../assets/logo.svg';
+import { Container, Content, AnimationContainer } from './styles';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';

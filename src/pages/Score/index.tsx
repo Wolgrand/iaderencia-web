@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useMemo, ChangeEvent } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 import { Link, useLocation, useParams, useHistory } from 'react-router-dom';
-import { isToday, format } from 'date-fns';
+import { isToday, format, parseISO } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 import 'react-day-picker/lib/style.css';
-import { FiPower } from 'react-icons/fi';
+import { FiPower, FiSettings } from 'react-icons/fi';
 import Icon from '@material-ui/core/Icon';
 import { useToast } from '../../hooks/toast';
 import ToggleSwitch from '../../components/ToggleSwitch';
@@ -28,12 +28,7 @@ import api from '../../services/api';
 import Button from '../../components/Button';
 import avatarDefaultImg from '../../assets/avatar.png';
 
-interface MonthAvailabilityItem {
-  day: number;
-  available: boolean;
-}
-
-interface Criterias {
+interface ObjectCriteria {
   id: string;
 }
 
@@ -42,6 +37,19 @@ interface Criteria {
   score: number;
   icon: string;
   title: string;
+}
+
+interface Transaction {
+  id: string;
+  created_at: string;
+  transaction_criterias: [
+    {
+      criteria: {
+        title: string;
+        score: string;
+      };
+    },
+  ];
 }
 
 interface Player {
@@ -66,6 +74,7 @@ const Score: React.FC = () => {
   const [selectedMultiply, setSelectedMultiply] = useState(false);
   const [player, setPlayer] = useState<Player | undefined>();
   const [criterias, setCriterias] = useState<Criteria[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   const [selectedCriteria, setSelectedCriteria] = useState<string[]>([]);
 
@@ -83,6 +92,13 @@ const Score: React.FC = () => {
       setCriterias(response.data);
     });
   }, []);
+
+  useEffect(() => {
+    api.get(`/transactions/${id}`).then((response) => {
+      setTransactions(response.data);
+      console.log(response.data);
+    });
+  }, [id]);
 
   useEffect(() => {
     setMultipliedScore(score * 1.5);
@@ -108,12 +124,14 @@ const Score: React.FC = () => {
     if (alreadySelected >= 0) {
       const filteredItems = selectedCriteria.filter((item) => item !== id);
       setSelectedCriteria(filteredItems);
+
       if (score > 0) {
         setScore(score - selectedScore);
         setMultipliedScore(Math.ceil(score * 1.5));
       }
     } else {
       setSelectedCriteria([...selectedCriteria, id]);
+
       setScore(score + selectedScore);
       setMultipliedScore(Math.ceil(score * 1.5));
     }
@@ -124,13 +142,20 @@ const Score: React.FC = () => {
   };
   const handleSave = (): void | undefined => {
     const newScore = selectedMultiply === true ? multipliedScore : score;
+    const newCriteria = [];
+
+    for (const item in selectedCriteria) {
+      newCriteria.push({
+        id: selectedCriteria[item],
+      });
+    }
+
     const data = {
       user_id: id,
       newScore,
-      criterias: selectedCriteria,
+      criterias: newCriteria,
     };
 
-    console.log(data);
     api.post('/transactions', data).then((response) => {
       addToast({
         type: 'success',
@@ -149,10 +174,13 @@ const Score: React.FC = () => {
           <Link to="/">
             <h1>iAderência</h1>
           </Link>
-          <button type="button" onClick={signOut}>
-            <FiPower />
-          </button>
+          <button type="button"></button>
+
           <Profile>
+            <button type="button" onClick={signOut}>
+              <FiSettings />
+            </button>
+
             <img
               src="https://avatars1.githubusercontent.com/u/24507574?s=460&u=59d56dda6d58cd54a0981d5ed6ea5d3f2dba0e81&v=4"
               alt={user.name}
@@ -163,6 +191,9 @@ const Score: React.FC = () => {
                 <strong>{user.name}</strong>
               </Link>
             </div>
+            <button type="button" onClick={signOut}>
+              <FiPower />
+            </button>
           </Profile>
         </HeaderContent>
       </Header>
@@ -261,6 +292,20 @@ const Score: React.FC = () => {
 
           <Section>
             <strong>Histórico de Pontuação</strong>
+
+            {transactions.map((transaction) => (
+              <div key={transaction.id}>
+                {' '}
+                <h3>
+                  {format(parseISO(transaction.created_at), 'dd/MM/yyyy')}
+                </h3>
+                {transaction.transaction_criterias.map((criteria) => (
+                  <p>
+                    {criteria.criteria.title} - {criteria.criteria.score}pts
+                  </p>
+                ))}
+              </div>
+            ))}
           </Section>
         </Schedule>
       </Content>

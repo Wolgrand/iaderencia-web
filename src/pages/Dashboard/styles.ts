@@ -36,6 +36,7 @@ export const HeaderContent = styled.div`
       color: #999591;
       width: 20px;
       height: 20px;
+      margin-left: 25px;
     }
   }
 `;
@@ -44,11 +45,13 @@ export const Profile = styled.div`
   display: flex;
   align-items: center;
   margin-left: 80px;
+  justify-content: space-around;
 
   img {
     width: 56px;
     height: 56px;
     border-radius: 50%;
+    margin-left: 20px;
   }
 
   div {
