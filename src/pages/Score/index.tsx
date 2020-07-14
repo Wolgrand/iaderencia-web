@@ -26,6 +26,7 @@ import {
 import { useAuth } from '../../hooks/auth';
 import api from '../../services/api';
 import Button from '../../components/Button';
+import Footer from '../../components/Footer';
 import avatarDefaultImg from '../../assets/avatar.png';
 
 interface ObjectCriteria {
@@ -177,14 +178,17 @@ const Score: React.FC = () => {
           <button type="button"></button>
 
           <Profile>
-            <button type="button" onClick={signOut}>
-              <FiSettings />
-            </button>
+            {user.role === 'pmo' ? (
+              <button type="button" onClick={signOut}>
+                <FiSettings />
+              </button>
+            ) : null}
 
-            <img
-              src="https://avatars1.githubusercontent.com/u/24507574?s=460&u=59d56dda6d58cd54a0981d5ed6ea5d3f2dba0e81&v=4"
-              alt={user.name}
-            />
+            {user.avatar_url === null ? (
+              <img src={avatarDefaultImg} alt={user.name} />
+            ) : (
+              <img src={user.avatar_url} alt={user.name} />
+            )}
             <div>
               <span>Bem vindo,</span>
               <Link to="/profile">
@@ -252,43 +256,47 @@ const Score: React.FC = () => {
             <span>{selectedWeekDay}</span>
           </p>
 
-          <Section>
-            <strong>
-              Selecionar Critério
-              {selectedMultiply === true ? (
-                <p>Pontuação: {Math.ceil(multipliedScore)}</p>
-              ) : (
-                <p>Pontuação: {score}</p>
-              )}
-              <div>
-                {score > 0 ? (
-                  <ToggleSwitch toggleMultiply={toggleMultiply} />
+          {user.role === 'pmo' ? (
+            <Section>
+              <strong>
+                Selecionar Critério
+                {selectedMultiply === true ? (
+                  <p>Pontuação: {Math.ceil(multipliedScore)}</p>
                 ) : (
-                  <ToggleSwitchDisabled toggleMultiply={toggleMultiply} />
+                  <p>Pontuação: {score}</p>
                 )}
+                <div>
+                  {score > 0 ? (
+                    <ToggleSwitch toggleMultiply={toggleMultiply} />
+                  ) : (
+                    <ToggleSwitchDisabled toggleMultiply={toggleMultiply} />
+                  )}
 
-                <p>1,5x</p>
-              </div>
-              <Button type="submit" onClick={handleSave}>
-                Salvar
-              </Button>
-            </strong>
+                  <p>1,5x</p>
+                </div>
+                <Button type="submit" onClick={handleSave}>
+                  Salvar
+                </Button>
+              </strong>
 
-            <ItemsGrid>
-              {criterias.map((criteria) => (
-                <li
-                  key={criteria.id}
-                  onClick={() => handleSelectItem(criteria.id, criteria.score)}
-                  className={
-                    selectedCriteria.includes(criteria.id) ? 'selected' : ''
-                  }
-                >
-                  <Icon>{criteria.icon}</Icon>
-                  <span>{criteria.title}</span>
-                </li>
-              ))}
-            </ItemsGrid>
-          </Section>
+              <ItemsGrid>
+                {criterias.map((criteria) => (
+                  <li
+                    key={criteria.id}
+                    onClick={() =>
+                      handleSelectItem(criteria.id, criteria.score)
+                    }
+                    className={
+                      selectedCriteria.includes(criteria.id) ? 'selected' : ''
+                    }
+                  >
+                    <Icon>{criteria.icon}</Icon>
+                    <span>{criteria.title}</span>
+                  </li>
+                ))}
+              </ItemsGrid>
+            </Section>
+          ) : null}
 
           <Section>
             <strong>Histórico de Pontuação</strong>
@@ -309,6 +317,7 @@ const Score: React.FC = () => {
           </Section>
         </Schedule>
       </Content>
+      <Footer> v1.0.0 © 2020 WN Studio</Footer>
     </Container>
   );
 };

@@ -19,13 +19,10 @@ import {
 } from './styles';
 
 import avatarDefaultImg from '../../assets/avatar.png';
+import avatarBatman from '../../assets/batman.png';
 import { useAuth } from '../../hooks/auth';
 import api from '../../services/api';
-
-interface MonthAvailabilityItem {
-  day: number;
-  available: boolean;
-}
+import Footer from '../../components/Footer';
 
 interface Player {
   id: number;
@@ -75,15 +72,20 @@ const Dashboard: React.FC = () => {
           <button type="button" />
 
           <Profile>
-            <button type="button" onClick={signOut}>
-              <FiSettings />
-            </button>
+            {user.role === 'pmo' ? (
+              <Link to="/admin">
+                <button type="button">
+                  <FiSettings />
+                </button>
+              </Link>
+            ) : null}
 
-            {user.avatar_url ? (
-              <img src={user.avatar_url} alt={user.name} />
-            ) : (
+            {user.avatar_url === null ? (
               <img src={avatarDefaultImg} alt={user.name} />
+            ) : (
+              <img src={user.avatar_url} alt={user.name} />
             )}
+
             <div>
               <span>Bem vindo,</span>
               <Link to="/profile">
@@ -120,10 +122,10 @@ const Dashboard: React.FC = () => {
                   {item.rank === 3 ? (
                     <FaCrown size={28} color="#e67e22" />
                   ) : null}
-                  {item.avatar_url ? (
-                    <img src={user.avatar_url} alt={user.name} />
+                  {item.avatar_url === null ? (
+                    <img src={avatarDefaultImg} alt={item.name} />
                   ) : (
-                    <img src={avatarDefaultImg} alt={user.name} />
+                    <img src={item.avatar_url} alt={item.name} />
                   )}
                   <strong>{item.name}</strong>
                   <span>{item.score} pts</span>
@@ -143,7 +145,7 @@ const Dashboard: React.FC = () => {
                   <span>{player.rank}º</span>
 
                   <div>
-                    {player.avatar_url ? (
+                    {player.avatar_url !== null ? (
                       <img src={player.avatar_url} alt={player.name} />
                     ) : (
                       <img src={avatarDefaultImg} alt={user.name} />
@@ -158,6 +160,7 @@ const Dashboard: React.FC = () => {
           </Section>
         </Schedule>
       </Content>
+      <Footer> v1.0.0 © 2020 WN Studio</Footer>
     </Container>
   );
 };

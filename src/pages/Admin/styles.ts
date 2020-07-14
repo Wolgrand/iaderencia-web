@@ -181,7 +181,6 @@ export const NextAppointment = styled.div`
 `;
 export const Section = styled.section`
   margin-top: 48px;
-
   > strong {
     color: #999591;
     font-size: 20px;
@@ -256,56 +255,63 @@ export const Appointment = styled.div`
   }
 `;
 
-export const Calendar = styled.aside`
-  width: 380px;
-  .DayPicker {
-    background: #28262e;
-    border-radius: 10px;
-  }
-
-  .DayPicker-wrapper {
-    padding-bottom: 0;
-  }
-
-  .DayPicker,
-  .DayPicker-Month {
+export const TableContainer = styled.section`
+  margin-top: 5px;
+  table {
     width: 100%;
-  }
+    border-spacing: 0 0px;
 
-  .DayPicker-Month {
-    border-collapse: separate;
-    border-spacing: 8px;
-    margin: 16px;
-  }
+    button {
+      color: #f4ede8;
+      background: transparent;
+      border: 0;
+      margin: 0px 5px;
 
-  .DayPicker-Day {
-    width: 40px;
-    height: 40px;
-  }
+      svg {
+        background-color: #28262e;
+        width: 20px;
+        height: 20px;
+      }
+    }
 
-  .DayPicker-Day--available:not(.DayPicker-Day--outside) {
-    background: #3e3b47;
-    border-radius: 10px;
-    color: #fff;
-  }
+    table tr td button svg {
+      color: #e74c3c;
+    }
+    tr {
+      div {
+        display: flex;
+        justify-content: row;
+      }
+    }
+    th {
+      color: #f4ede8;
+      font-weight: normal;
+      padding: 10px 32px;
+      text-align: left;
+      font-size: 16px;
+      line-height: 20px;
+    }
+    td {
+      padding: 10px 32px;
+      border: 0;
+      background: #28262e;
+      font-size: 16px;
+      font-weight: normal;
+      color: #f4ede8;
+      border-bottom: 1px solid #312e38;
 
-  .DayPicker:not(.DayPicker--interactionDisabled)
-    .DayPicker-Day:not(.DayPicker-Day--disabled):not(.DayPicker-Day--selected):not(.DayPicker-Day--outside):hover {
-    background: ${shade(0.2, '#3e3b47')};
-  }
+      button {
+        color: #f4ede8;
+        background: transparent;
+        border: 0;
+        margin: 0px 5px;
 
-  .DayPicker-Day--today {
-    font-weight: normal;
-  }
-
-  .DayPicker-Day--disabled {
-    color: #666360 !important;
-    background: transparent !important;
-  }
-
-  .DayPicker-Day--selected {
-    background: #ff9000 !important;
-    border-radius: 10px;
-    color: #232129 !important;
+        svg {
+          background-color: #28262e;
+          width: 20px;
+          height: 20px;
+        }
+      }
+    }
   }
 `;

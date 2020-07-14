@@ -28,6 +28,7 @@ export const HeaderContent = styled.div`
 
   button {
     margin-left: auto;
+    margin-right: 5px;
     background: transparent;
     border: 0;
 
@@ -35,7 +36,7 @@ export const HeaderContent = styled.div`
       color: #999591;
       width: 20px;
       height: 20px;
-      margin-left: 25px;
+      margin: 10px;
     }
   }
 `;
@@ -50,13 +51,13 @@ export const Profile = styled.div`
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    margin-left: 20px;
+    margin: 0 15px;
   }
 
   div {
     display: flex;
     flex-direction: column;
-    margin-left: 16px;
+    margin-left: 10px;
     line-height: 24px;
 
     span {
@@ -241,8 +242,8 @@ export const Section = styled.section`
 
   h3 {
     color: #f4ede8;
-    padding: 10px;
-    margin-top: 30px;
+
+    margin-top: 10px;
   }
 `;
 

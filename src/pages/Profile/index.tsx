@@ -14,6 +14,7 @@ import { Container, Content, AvatarInput } from './styles';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
+import Footer from '../../components/Footer';
 import { useAuth } from '../../hooks/auth';
 import avatarDefaultImg from '../../assets/avatar.png';
 
@@ -189,6 +190,7 @@ const Profile: React.FC = () => {
           <Button type="submit">Confirmar Mudanças</Button>
         </Form>
       </Content>
+      <Footer> v1.0.0 © 2020 WN Studio</Footer>
     </Container>
   );
 };

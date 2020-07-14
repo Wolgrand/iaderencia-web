@@ -10,6 +10,7 @@ import ResetPassword from '../pages/ResetPassword';
 import Dashboard from '../pages/Dashboard';
 import Profile from '../pages/Profile';
 import Score from '../pages/Score';
+import Admin from '../pages/Admin';
 
 const Routes: React.FC = () => (
   <Switch>
@@ -20,6 +21,7 @@ const Routes: React.FC = () => (
     <Route path="/score/:id" component={Score} isPrivate />
     <Route path="/dashboard" component={Dashboard} isPrivate />
     <Route path="/profile" component={Profile} isPrivate />
+    <Route path="/admin" component={Admin} isPrivate />
   </Switch>
 );
 
