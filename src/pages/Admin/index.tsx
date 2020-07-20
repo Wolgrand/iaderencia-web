@@ -1,18 +1,11 @@
-import React, {
-  useState,
-  useEffect,
-  useMemo,
-  useRef,
-  useCallback,
-} from 'react';
-import * as Yup from 'yup';
-import { Link, useHistory } from 'react-router-dom';
+import React, { useState, useEffect, useMemo } from 'react';
+
+import { Link } from 'react-router-dom';
 import { isToday, format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 
 import { makeStyles, Theme } from '@material-ui/core/styles';
-import { Form } from '@unform/web';
-import { FormHandles } from '@unform/core';
+
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -31,7 +24,7 @@ import {
   FiCheck,
   FiX,
 } from 'react-icons/fi';
-import { FaCrown } from 'react-icons/fa';
+
 import {
   Container,
   Header,
@@ -39,8 +32,6 @@ import {
   Profile,
   Content,
   Schedule,
-  NextAppointment,
-  Appointment,
   TableContainer,
   Section,
 } from './styles';
@@ -121,11 +112,14 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const Admin: React.FC = () => {
   const [criterias, setCriterias] = useState<Criteria[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [players, setPlayers] = useState<Players[]>([]);
 
   const { signOut, user } = useAuth();
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedDate, setSelectedDate] = useState(new Date());
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, setLoading] = useState(false);
   const [newCriteria, setNewCriteria] = useState(false);
   const [editRow, setEditRow] = useState<string[]>([]);
@@ -164,10 +158,6 @@ const Admin: React.FC = () => {
   };
 
   const handleIgnoreNewCriteria = (): void => {
-    setNewCriteria(!newCriteria);
-  };
-
-  const handleRowEditionIgnore = (): void => {
     setNewCriteria(!newCriteria);
   };
 

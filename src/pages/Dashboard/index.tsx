@@ -19,7 +19,7 @@ import {
 } from './styles';
 
 import avatarDefaultImg from '../../assets/avatar.png';
-import avatarBatman from '../../assets/batman.png';
+
 import { useAuth } from '../../hooks/auth';
 import api from '../../services/api';
 import Footer from '../../components/Footer';
@@ -35,6 +35,7 @@ interface Player {
 const Dashboard: React.FC = () => {
   const { signOut, user } = useAuth();
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const [players, setPlayers] = useState<Player[]>([]);

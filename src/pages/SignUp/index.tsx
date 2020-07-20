@@ -10,8 +10,7 @@ import { useToast } from '../../hooks/toast';
 
 import getValidationsErrors from '../../utils/getValidationsErrors';
 
-import { Container, Content, Background, AnimationContainer } from './styles';
-import logoImg from '../../assets/logo.svg';
+import { Container, Content, AnimationContainer } from './styles';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
