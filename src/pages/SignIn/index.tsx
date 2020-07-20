@@ -13,6 +13,7 @@ import { Container, Content, AnimationContainer } from './styles';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
+import logo from '../../assets/logoBG.png';
 
 interface SignInFormatData {
   email: string;
@@ -69,7 +70,7 @@ const SignIn: React.FC = () => {
     <Container>
       <Content>
         <AnimationContainer>
-          <h1>PM-Gamification</h1>
+          <img src={logo} alt="PM Gamification" />
           <Form ref={formRef} onSubmit={handleSubmit}>
             <h1>Faça seu logon</h1>
 

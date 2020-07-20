@@ -19,6 +19,7 @@ import {
 } from './styles';
 
 import avatarDefaultImg from '../../assets/avatar.png';
+import logo from '../../assets/logo.png';
 
 import { useAuth } from '../../hooks/auth';
 import api from '../../services/api';
@@ -73,7 +74,7 @@ const Dashboard: React.FC = () => {
       <Header>
         <HeaderContent>
           <Link to="/">
-            <h1>PM-Gamification</h1>
+            <img src={logo} alt="PM-Gamification" />
           </Link>
           <button type="button" />
 

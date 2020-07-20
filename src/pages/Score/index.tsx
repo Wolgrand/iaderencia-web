@@ -28,6 +28,7 @@ import api from '../../services/api';
 import Button from '../../components/Button';
 import Footer from '../../components/Footer';
 import avatarDefaultImg from '../../assets/avatar.png';
+import logo from '../../assets/logo.png';
 
 interface ObjectCriteria {
   id: string;
@@ -173,7 +174,7 @@ const Score: React.FC = () => {
       <Header>
         <HeaderContent>
           <Link to="/">
-            <h1>PM-Gamification</h1>
+            <img src={logo} alt="PM-Gamification" />
           </Link>
           <button type="button"></button>
 

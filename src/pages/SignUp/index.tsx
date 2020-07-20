@@ -14,6 +14,7 @@ import { Container, Content, AnimationContainer } from './styles';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
+import logo from '../../assets/PM.png';
 
 interface SignUpFormData {
   name: string;
