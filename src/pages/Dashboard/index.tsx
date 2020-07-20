@@ -25,7 +25,7 @@ import api from '../../services/api';
 import Footer from '../../components/Footer';
 
 interface Player {
-  id: number;
+  id: string;
   name: string;
   score: number;
   avatar_url: string;
@@ -38,6 +38,8 @@ const Dashboard: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const [players, setPlayers] = useState<Player[]>([]);
+
+  const [playerUser, setPlayerUser] = useState<Player[]>([]);
   const [top3, setTop3] = useState<Player[]>([]);
 
   useEffect(() => {
@@ -48,7 +50,10 @@ const Dashboard: React.FC = () => {
     api.get(`/top3`).then((response) => {
       setTop3(response.data);
     });
-  }, []);
+
+    const data = players.filter((item) => item.id === user.id);
+    setPlayerUser(data);
+  }, [players, user.id]);
 
   const selectedDateasText = useMemo(() => {
     return format(selectedDate, " 'Dia' dd 'de' MMMM", {
@@ -67,7 +72,7 @@ const Dashboard: React.FC = () => {
       <Header>
         <HeaderContent>
           <Link to="/">
-            <h1>iAderência</h1>
+            <h1>PM-Gamification</h1>
           </Link>
           <button type="button" />
 
@@ -136,27 +141,49 @@ const Dashboard: React.FC = () => {
 
           <Section>
             <strong>Top 10</strong>
-            {players.map((player) => (
-              <Link
-                to={`/score/${player.id}?rank=${player.rank}`}
-                key={player.id}
-              >
-                <Appointment key={player.id}>
-                  <span>{player.rank}º</span>
+            {user.role === 'player'
+              ? playerUser.map((player) => (
+                  <Link
+                    to={`/score/${player.id}?rank=${player.rank}`}
+                    key={player.id}
+                  >
+                    <Appointment key={player.id}>
+                      <span>{player.rank}º</span>
 
-                  <div>
-                    {player.avatar_url !== null ? (
-                      <img src={player.avatar_url} alt={player.name} />
-                    ) : (
-                      <img src={avatarDefaultImg} alt={user.name} />
-                    )}
+                      <div>
+                        {player.avatar_url !== null ? (
+                          <img src={player.avatar_url} alt={player.name} />
+                        ) : (
+                          <img src={avatarDefaultImg} alt={user.name} />
+                        )}
 
-                    <strong>{player.name}</strong>
-                    <span>{player.score} pts</span>
-                  </div>
-                </Appointment>
-              </Link>
-            ))}
+                        <strong>{player.name}</strong>
+                        <span>{player.score} pts</span>
+                      </div>
+                    </Appointment>
+                  </Link>
+                ))
+              : players.map((player) => (
+                  <Link
+                    to={`/score/${player.id}?rank=${player.rank}`}
+                    key={player.id}
+                  >
+                    <Appointment key={player.id}>
+                      <span>{player.rank}º</span>
+
+                      <div>
+                        {player.avatar_url !== null ? (
+                          <img src={player.avatar_url} alt={player.name} />
+                        ) : (
+                          <img src={avatarDefaultImg} alt={user.name} />
+                        )}
+
+                        <strong>{player.name}</strong>
+                        <span>{player.score} pts</span>
+                      </div>
+                    </Appointment>
+                  </Link>
+                ))}
           </Section>
         </Schedule>
       </Content>

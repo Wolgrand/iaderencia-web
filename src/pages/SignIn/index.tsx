@@ -69,7 +69,7 @@ const SignIn: React.FC = () => {
     <Container>
       <Content>
         <AnimationContainer>
-          <h1>iAderência</h1>
+          <h1>PM-Gamification</h1>
           <Form ref={formRef} onSubmit={handleSubmit}>
             <h1>Faça seu logon</h1>
 
@@ -83,13 +83,13 @@ const SignIn: React.FC = () => {
 
             <Button type="submit">Entrar</Button>
 
-            <Link to="/forgot-password">Esqueci minha senha</Link>
+            {/* <Link to="/forgot-password">Esqueci minha senha</Link> */}
           </Form>
 
-          <Link to="/signup">
+          {/*           <Link to="/signup">
             <FiLogIn />
             Criar conta
-          </Link>
+          </Link> */}
         </AnimationContainer>
       </Content>
     </Container>

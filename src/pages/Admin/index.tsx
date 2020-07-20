@@ -1,8 +1,23 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+} from 'react';
+import * as Yup from 'yup';
+import { Link, useHistory } from 'react-router-dom';
 import { isToday, format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
-import ReactDOM from 'react-dom';
+
+import { makeStyles, Theme } from '@material-ui/core/styles';
+import { Form } from '@unform/web';
+import { FormHandles } from '@unform/core';
+import AppBar from '@material-ui/core/AppBar';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
 
 import Icon from '@material-ui/core/Icon';
 
@@ -36,6 +51,15 @@ import { useAuth } from '../../hooks/auth';
 import api from '../../services/api';
 import Footer from '../../components/Footer';
 
+interface CreateUserFormData {
+  name: string;
+  email: string;
+  password: string;
+  score: string;
+  department: string;
+  company: string;
+}
+
 interface Criteria {
   id?: string;
   title: string;
@@ -43,8 +67,61 @@ interface Criteria {
   icon: string;
 }
 
+interface Players {
+  id?: string;
+  name: string;
+  email: number;
+  score: string;
+  role: string;
+  department: string;
+  company: string;
+}
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: any;
+  value: any;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box p={3}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+function a11yProps(index: any) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
+
+const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  tabStyle: {
+    flexGrow: 1,
+  },
+}));
+
 const Admin: React.FC = () => {
   const [criterias, setCriterias] = useState<Criteria[]>([]);
+  const [players, setPlayers] = useState<Players[]>([]);
 
   const { signOut, user } = useAuth();
 
@@ -56,6 +133,13 @@ const Admin: React.FC = () => {
   const [criteriaTitle, setCriteriaTitle] = useState('');
   const [criteriaIcon, setCriteriaIcon] = useState('');
   const [criteriaScore, setCriteriaScore] = useState('');
+
+  const classes = useStyles();
+  const [value, setValue] = React.useState(0);
+
+  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+    setValue(newValue);
+  };
 
   useEffect(() => {
     api.get(`/criterias`).then((response) => {
@@ -115,7 +199,7 @@ const Admin: React.FC = () => {
       <Header>
         <HeaderContent>
           <Link to="/">
-            <h1>iAderência</h1>
+            <h1>PM-Gamification</h1>
           </Link>
           <button type="button" />
 
@@ -156,133 +240,261 @@ const Admin: React.FC = () => {
           </p>
 
           <Section>
-            <strong>Critérios</strong>
-            <TableContainer>
-              <table>
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Icone</th>
-                    <th>Critério</th>
-                    <th>Score</th>
-                    <th>
-                      {' '}
-                      <button type="button" onClick={handleShowEditRow}>
-                        <FiPlusSquare />
-                      </button>
-                    </th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {newCriteria ? (
-                    <tr>
-                      <td></td>
-                      <td>
-                        <input
-                          onChange={(e) => setCriteriaIcon(e.target.value)}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          onChange={(e) => setCriteriaTitle(e.target.value)}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          onChange={(e) => setCriteriaScore(e.target.value)}
-                        />
-                      </td>
-                      <td>
-                        <div>
+            <div className={classes.root}>
+              <AppBar
+                position="static"
+                style={{ backgroundColor: '#28262E', color: '#f4ede8' }}
+              >
+                <Tabs value={value} onChange={handleChange}>
+                  <Tab label="Critérios" {...a11yProps(0)} />
+                  <Tab label="Jogadores" {...a11yProps(1)} />
+                </Tabs>
+              </AppBar>
+              <TabPanel value={value} index={0}>
+                <TableContainer>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Icone</th>
+                        <th>Critério</th>
+                        <th>Score</th>
+                        <th>
                           {' '}
-                          <button
-                            type="button"
-                            className="accept"
-                            onClick={addCriteria}
-                          >
-                            <FiCheck />
+                          <button type="button" onClick={handleShowEditRow}>
+                            <FiPlusSquare />
                           </button>
-                          <button
-                            type="button"
-                            className="ignore"
-                            onClick={handleIgnoreNewCriteria}
-                          >
-                            <FiX />
+                        </th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {newCriteria ? (
+                        <tr>
+                          <td></td>
+                          <td>
+                            <input
+                              onChange={(e) => setCriteriaIcon(e.target.value)}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              onChange={(e) => setCriteriaTitle(e.target.value)}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              onChange={(e) => setCriteriaScore(e.target.value)}
+                            />
+                          </td>
+                          <td>
+                            <div>
+                              {' '}
+                              <button
+                                type="button"
+                                className="accept"
+                                onClick={addCriteria}
+                              >
+                                <FiCheck />
+                              </button>
+                              <button
+                                type="button"
+                                className="ignore"
+                                onClick={handleIgnoreNewCriteria}
+                              >
+                                <FiX />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ) : null}
+                      {criterias.map((item) => (
+                        <tr>
+                          <td>{criterias.indexOf(item) + 1}</td>
+                          <td>
+                            {editRow.includes(item.title) ? (
+                              <input
+                                defaultValue={item.icon}
+                                onChange={(e) =>
+                                  setCriteriaIcon(e.target.value)
+                                }
+                              />
+                            ) : (
+                              <Icon>{item.icon}</Icon>
+                            )}
+                          </td>
+                          <td>
+                            {editRow.includes(item.title) ? (
+                              <input
+                                defaultValue={item.title}
+                                onChange={(e) =>
+                                  setCriteriaTitle(e.target.value)
+                                }
+                              />
+                            ) : (
+                              item.title
+                            )}
+                          </td>
+
+                          <td>
+                            {editRow.includes(item.title) ? (
+                              <input
+                                defaultValue={String(item.score)}
+                                onChange={(e) =>
+                                  setCriteriaScore(e.target.value)
+                                }
+                              />
+                            ) : (
+                              item.score
+                            )}
+                          </td>
+
+                          <td>
+                            {editRow.includes(item.title) ? (
+                              <div>
+                                {' '}
+                                <button type="button" className="accept">
+                                  <FiCheck />
+                                </button>
+                                <button
+                                  type="button"
+                                  className="ignore"
+                                  onClick={() => handleRowEdition(item.title)}
+                                >
+                                  <FiX />
+                                </button>
+                              </div>
+                            ) : (
+                              <div>
+                                <button
+                                  type="button"
+                                  onClick={() => handleRowEdition(item.title)}
+                                >
+                                  <FiEdit />
+                                </button>
+                                <button type="button">
+                                  <FiTrash />
+                                </button>
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </TableContainer>
+              </TabPanel>
+              <TabPanel value={value} index={1}>
+                <TableContainer>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Empresa</th>
+                        <th>Departamento</th>
+                        <th>Nome</th>
+                        <th>Score</th>
+
+                        <th>
+                          {' '}
+                          <button type="button" onClick={handleShowEditRow}>
+                            <FiPlusSquare />
                           </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ) : null}
-                  {criterias.map((item) => (
-                    <tr>
-                      <td>{criterias.indexOf(item) + 1}</td>
-                      <td>
-                        {editRow.includes(item.title) ? (
-                          <input
-                            value={item.icon}
-                            onChange={(e) => setCriteriaIcon(e.target.value)}
-                          />
-                        ) : (
-                          <Icon>{item.icon}</Icon>
-                        )}
-                      </td>
-                      <td>
-                        {editRow.includes(item.title) ? (
-                          <input
-                            value={item.title}
-                            onChange={(e) => setCriteriaTitle(e.target.value)}
-                          />
-                        ) : (
-                          item.title
-                        )}
-                      </td>
+                        </th>
+                      </tr>
+                    </thead>
 
-                      <td>
-                        {editRow.includes(item.title) ? (
-                          <input
-                            value={String(item.score)}
-                            onChange={(e) => setCriteriaScore(e.target.value)}
-                          />
-                        ) : (
-                          item.score
-                        )}
-                      </td>
+                    <tbody>
+                      {players.map((item) => (
+                        <tr>
+                          <td>{players.indexOf(item) + 1}</td>
+                          <td>
+                            {editRow.includes(item.name) ? (
+                              <input
+                                defaultValue={item.company}
+                                onChange={(e) =>
+                                  setCriteriaIcon(e.target.value)
+                                }
+                              />
+                            ) : (
+                              item.company
+                            )}
+                          </td>
+                          <td>
+                            {editRow.includes(item.name) ? (
+                              <input
+                                defaultValue={item.department}
+                                onChange={(e) =>
+                                  setCriteriaTitle(e.target.value)
+                                }
+                              />
+                            ) : (
+                              item.department
+                            )}
+                          </td>
 
-                      <td>
-                        {editRow.includes(item.title) ? (
-                          <div>
-                            {' '}
-                            <button type="button" className="accept">
-                              <FiCheck />
-                            </button>
-                            <button
-                              type="button"
-                              className="ignore"
-                              onClick={() => handleRowEdition(item.title)}
-                            >
-                              <FiX />
-                            </button>
-                          </div>
-                        ) : (
-                          <div>
-                            <button
-                              type="button"
-                              onClick={() => handleRowEdition(item.title)}
-                            >
-                              <FiEdit />
-                            </button>
-                            <button type="button">
-                              <FiTrash />
-                            </button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </TableContainer>
+                          <td>
+                            {editRow.includes(item.name) ? (
+                              <input
+                                defaultValue={item.name}
+                                onChange={(e) =>
+                                  setCriteriaTitle(e.target.value)
+                                }
+                              />
+                            ) : (
+                              item.name
+                            )}
+                          </td>
+
+                          <td>
+                            {editRow.includes(item.name) ? (
+                              <input
+                                defaultValue={item.score}
+                                onChange={(e) =>
+                                  setCriteriaTitle(e.target.value)
+                                }
+                              />
+                            ) : (
+                              item.score
+                            )}
+                          </td>
+
+                          <td>
+                            {editRow.includes(item.name) ? (
+                              <div>
+                                {' '}
+                                <button type="button" className="accept">
+                                  <FiCheck />
+                                </button>
+                                <button
+                                  type="button"
+                                  className="ignore"
+                                  onClick={() => handleRowEdition(item.name)}
+                                >
+                                  <FiX />
+                                </button>
+                              </div>
+                            ) : (
+                              <div>
+                                <button
+                                  type="button"
+                                  onClick={() => handleRowEdition(item.name)}
+                                >
+                                  <FiEdit />
+                                </button>
+                                <button type="button">
+                                  <FiTrash />
+                                </button>
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </TableContainer>
+              </TabPanel>
+            </div>
           </Section>
         </Schedule>
       </Content>

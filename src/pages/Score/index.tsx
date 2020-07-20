@@ -173,7 +173,7 @@ const Score: React.FC = () => {
       <Header>
         <HeaderContent>
           <Link to="/">
-            <h1>iAderência</h1>
+            <h1>PM-Gamification</h1>
           </Link>
           <button type="button"></button>
 

@@ -73,7 +73,7 @@ const SignUp: React.FC = () => {
     <Container>
       <Content>
         <AnimationContainer>
-          <h1>iAderência</h1>
+          <h1>PM-Gamification</h1>
           <Form ref={formRef} onSubmit={handleSubmit}>
             <h1>Faça seu cadastro</h1>
 

@@ -181,6 +181,10 @@ export const NextAppointment = styled.div`
 `;
 export const Section = styled.section`
   margin-top: 48px;
+
+  .PrivateTabIndicator-colorSecondary-5 {
+    background-color: #ff9000;
+  }
   > strong {
     color: #999591;
     font-size: 20px;
@@ -258,7 +262,7 @@ export const Appointment = styled.div`
 export const TableContainer = styled.section`
   margin-top: 5px;
   table {
-    width: 100%;
+    width: 974px;
     border-spacing: 0 0px;
 
     button {
