@@ -41,6 +41,7 @@ import avatarDefaultImg from '../../assets/avatar.png';
 import { useAuth } from '../../hooks/auth';
 import api from '../../services/api';
 import Footer from '../../components/Footer';
+import logo from '../../assets/logo.png';
 
 interface CreateUserFormData {
   name: string;

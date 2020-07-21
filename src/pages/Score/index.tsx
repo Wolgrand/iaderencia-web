@@ -6,6 +6,7 @@ import ptBR from 'date-fns/locale/pt-BR';
 import 'react-day-picker/lib/style.css';
 import { FiPower, FiSettings } from 'react-icons/fi';
 import Icon from '@material-ui/core/Icon';
+import { Line, Circle } from 'rc-progress';
 import { useToast } from '../../hooks/toast';
 import ToggleSwitch from '../../components/ToggleSwitch';
 import ToggleSwitchDisabled from '../../components/ToggleSwitchDisabled';
@@ -21,6 +22,8 @@ import {
   Section,
   Avatar,
   ItemsGrid,
+  PlayerProfile,
+  Reward,
 } from './styles';
 
 import { useAuth } from '../../hooks/auth';
@@ -98,7 +101,6 @@ const Score: React.FC = () => {
   useEffect(() => {
     api.get(`/transactions/${id}`).then((response) => {
       setTransactions(response.data);
-      console.log(response.data);
     });
   }, [id]);
 
@@ -205,7 +207,7 @@ const Score: React.FC = () => {
       <Content>
         <Calendar>
           <Avatar>
-            <div>
+            <PlayerProfile>
               {player && player.avatar_url ? (
                 <img src={player.avatar_url} alt={player.name} />
               ) : (
@@ -215,8 +217,138 @@ const Score: React.FC = () => {
               <span>{rank}</span>
               <strong>{player ? player.name : ''}</strong>
               <p>{player ? player.score : ''} pts</p>
+            </PlayerProfile>
 
-              <section>
+            <Reward>
+              <strong>Recompensas</strong>
+              <p>Caixa de Chocolate - 1000pts</p>
+              {player && player.score / 1000 <= 1 ? (
+                <div>
+                  <Line
+                    percent={(player.score / 1000) * 100}
+                    strokeWidth={6}
+                    trailWidth={5}
+                    strokeColor="#ff9000"
+                    strokeLinecap="round"
+                  />
+                  <p>{Math.ceil((player.score / 1000) * 100)}%</p>
+                </div>
+              ) : (
+                <div>
+                  <Line
+                    percent={100}
+                    strokeWidth={6}
+                    trailWidth={5}
+                    strokeColor="#27ae60"
+                    strokeLinecap="round"
+                  />
+                  <p>100%</p>
+                </div>
+              )}
+
+              <p>Pen Drive - 2500pts</p>
+              {player && player.score / 2500 <= 1 ? (
+                <div>
+                  <Line
+                    percent={(player.score / 2500) * 100}
+                    strokeWidth={6}
+                    trailWidth={5}
+                    strokeColor="#ff9000"
+                    strokeLinecap="round"
+                  />
+                  <p>{Math.ceil((player.score / 2500) * 100)}%</p>
+                </div>
+              ) : (
+                <div>
+                  <Line
+                    percent={100}
+                    strokeWidth={6}
+                    trailWidth={5}
+                    strokeColor="#27ae60"
+                    strokeLinecap="round"
+                  />
+                  <p>100%</p>
+                </div>
+              )}
+
+              <p>Livro Técnico - 3500pts</p>
+              {player && player.score / 3500 <= 1 ? (
+                <div>
+                  <Line
+                    percent={(player.score / 3500) * 100}
+                    strokeWidth={6}
+                    trailWidth={5}
+                    strokeColor="#ff9000"
+                    strokeLinecap="round"
+                  />
+                  <p>{Math.ceil((player.score / 3500) * 100)}%</p>
+                </div>
+              ) : (
+                <div>
+                  <Line
+                    percent={100}
+                    strokeWidth={6}
+                    trailWidth={5}
+                    strokeColor="#27ae60"
+                    strokeLinecap="round"
+                  />
+                  <p>100%</p>
+                </div>
+              )}
+
+              <p>Fone de Ouvido - 5000pts</p>
+              {player && player.score / 5000 <= 1 ? (
+                <div>
+                  <Line
+                    percent={(player.score / 5000) * 100}
+                    strokeWidth={6}
+                    trailWidth={5}
+                    strokeColor="#ff9000"
+                    strokeLinecap="round"
+                  />
+                  <p>{Math.ceil((player.score / 5000) * 100)}%</p>
+                </div>
+              ) : (
+                <div>
+                  <Line
+                    percent={100}
+                    strokeWidth={6}
+                    trailWidth={5}
+                    strokeColor="#27ae60"
+                    strokeLinecap="round"
+                  />
+                  <p>100%</p>
+                </div>
+              )}
+
+              <p>Leitor de Livros - 7500pts</p>
+              {player && player.score / 7500 <= 1 ? (
+                <div>
+                  <Line
+                    percent={(player.score / 7500) * 100}
+                    strokeWidth={6}
+                    trailWidth={5}
+                    strokeColor="#ff9000"
+                    strokeLinecap="round"
+                  />
+                  <p>{Math.ceil((player.score / 7500) * 100)}%</p>
+                </div>
+              ) : (
+                <div>
+                  <Line
+                    percent={100}
+                    strokeWidth={6}
+                    trailWidth={5}
+                    strokeColor="#27ae60"
+                    strokeLinecap="round"
+                  />
+                  <p>100%</p>
+                </div>
+              )}
+            </Reward>
+          </Avatar>
+
+          {/*               <section>
                 <span>Conquistas</span>
                 <ul>
                   <li />
@@ -240,13 +372,11 @@ const Score: React.FC = () => {
                   <li />
                   <li />
                 </ul>
-              </section>
+              </section> */}
 
-              <section>
-                <br />
-              </section>
-            </div>
-          </Avatar>
+          <section>
+            <br />
+          </section>
         </Calendar>
         <Schedule>
           <h1>Adicionar Pontuação</h1>
@@ -318,7 +448,6 @@ const Score: React.FC = () => {
           </Section>
         </Schedule>
       </Content>
-      <Footer> v1.0.0 © 2020 WN Studio</Footer>
     </Container>
   );
 };

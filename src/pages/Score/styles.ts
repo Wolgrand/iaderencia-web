@@ -247,6 +247,47 @@ export const Section = styled.section`
   }
 `;
 
+export const Reward = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  font-size: 16px;
+  color: #f4ede8;
+  padding-top: 10px;
+  text-align: left;
+  border-top: 1px solid #999591;
+
+  > strong {
+    color: #fff;
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  > p {
+    left: 0px;
+    font-size: 16px;
+    color: #999591;
+    width: 100%;
+  }
+
+  div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    svg {
+      width: 80%;
+      height: 80%;
+    }
+
+    > p {
+      margin: 10px auto;
+      font-size: 16px;
+      color: #999591;
+    }
+  }
+`;
+
 export const Form = styled.section`
   display: flex;
 
@@ -392,125 +433,58 @@ export const Appointment = styled.div`
 export const Avatar = styled.div`
   display: flex;
   align-items: center;
+  justify-content: column;
 
-  & + div {
-    margin-top: 16px;
+  flex: 1;
+  background: #3e3b47;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 24px;
+  border-radius: 10px;
+  margin-left: 24px;
+`;
+export const PlayerProfile = styled.div`
+  display: flex;
+  flex: 2;
+  flex-direction: column;
+  align-items: center;
+  img {
+    width: 156px;
+    height: 156px;
+    border-radius: 50%;
   }
 
-  > span {
-    margin: 0 auto;
+  span {
+    position: relative;
+    width: 28px;
+    height: 28px;
+    background: #ff9000;
+    border-radius: 50%;
+    left: 50px;
+    bottom: 30px;
+    border: 0;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    color: #312e38;
+
     display: flex;
     align-items: center;
     justify-content: center;
-
-    color: #ff9000;
-    width: 70px;
-    font-size: 24px;
-
-    svg {
-      color: #ff9000;
-      margin-right: 8px;
-    }
   }
-  div {
-    flex: 1;
-    background: #3e3b47;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px 24px;
-    border-radius: 10px;
-    margin-left: 24px;
 
-    img {
-      width: 148px;
-      height: 148px;
-      border-radius: 50%;
-    }
-    > span {
-      position: relative;
-      width: 28px;
-      height: 28px;
-      background: #ff9000;
-      border-radius: 50%;
-      right: 30%;
-      bottom: 30px;
-      border: 0;
-      cursor: pointer;
-      transition: background-color 0.2s;
-      color: #312e38;
+  strong {
+    color: #fff;
+    font-size: 28px;
+    text-align: center;
+  }
 
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    strong {
-      color: #fff;
-      font-size: 28px;
-      margin-bottom: 10px;
-    }
-
-    p {
-      color: #fff;
-      font-size: 32px;
-      margin-bottom: 15px;
-      color: #ff9000;
-    }
-
-    span {
-      margin-left: auto;
-      display: flex;
-      align-items: center;
-      color: #f4ede8;
-      font-size: 20px;
-    }
-    section {
-      > span {
-        border-top: 1px solid #999591;
-        margin-bottom: 20px;
-        padding-top: 40px;
-        flex: 1;
-      }
-      span {
-        padding: 10px;
-        color: #f4ede8;
-        font-size: 20px;
-
-        display: flex;
-        justify-content: center;
-      }
-      ul {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 12px;
-        list-style: none;
-
-        li {
-          background: #312e38;
-
-          height: 60px;
-          border-radius: 8px;
-          padding: 32px 32px 16px;
-
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          align-items: center;
-
-          text-align: center;
-
-          cursor: pointer;
-
-          span {
-            flex: 1;
-            margin-top: 12px;
-
-            display: flex;
-            align-items: center;
-          }
-        }
-      }
-    }
+  p {
+    color: #fff;
+    font-size: 32px;
+    margin-bottom: 15px;
+    color: #ff9000;
+    text-align: center;
   }
 `;
 

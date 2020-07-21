@@ -189,7 +189,6 @@ const Dashboard: React.FC = () => {
           </Section>
         </Schedule>
       </Content>
-      <Footer> v1.0.0 © 2020 WN Studio</Footer>
     </Container>
   );
 };

@@ -20,6 +20,7 @@
     "material-table": "^1.65.0",
     "polished": "^3.5.2",
     "prop-types": "^15.7.2",
+    "rc-progress": "^3.0.0",
     "react": "^16.13.1",
     "react-avatar": "^3.9.7",
     "react-day-picker": "^7.4.8",
