@@ -23,7 +23,7 @@ import logo from '../../assets/logo.png';
 
 import { useAuth } from '../../hooks/auth';
 import api from '../../services/api';
-import Footer from '../../components/Footer';
+import FacebookCircularProgress from '../../components/Loading';
 
 interface Player {
   id: string;
@@ -43,19 +43,22 @@ const Dashboard: React.FC = () => {
 
   const [playerUser, setPlayerUser] = useState<Player[]>([]);
   const [top3, setTop3] = useState<Player[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     api.get(`/rank`).then((response) => {
       setPlayers(response.data);
     });
 
     api.get(`/top3`).then((response) => {
       setTop3(response.data);
+      setLoading(false);
     });
 
     const data = players.filter((item) => item.id === user.id);
     setPlayerUser(data);
-  }, [players, user.id]);
+  }, []);
 
   const selectedDateasText = useMemo(() => {
     return format(selectedDate, " 'Dia' dd 'de' MMMM", {
@@ -114,79 +117,86 @@ const Dashboard: React.FC = () => {
             <span>{selectedWeekDay}</span>
           </p>
 
-          <NextAppointment>
-            <strong>Top 3</strong>
-
+          {loading ? (
             <div>
-              {top3.map((item) => (
-                <div key={item.id}>
-                  {item.rank === 1 ? (
-                    <FaCrown size={28} color="#f1c40f" />
-                  ) : null}
-                  {item.rank === 2 ? (
-                    <FaCrown size={28} color="#95a5a6" />
-                  ) : null}
-                  {item.rank === 3 ? (
-                    <FaCrown size={28} color="#e67e22" />
-                  ) : null}
-                  {item.avatar_url === null ? (
-                    <img src={avatarDefaultImg} alt={item.name} />
-                  ) : (
-                    <img src={item.avatar_url} alt={item.name} />
-                  )}
-                  <strong>{item.name}</strong>
-                  <span>{item.score} pts</span>
-                </div>
-              ))}
+              <FacebookCircularProgress />
             </div>
-          </NextAppointment>
-
-          <Section>
-            <strong>Top 10</strong>
-            {user.role === 'player'
-              ? playerUser.map((player) => (
-                  <Link
-                    to={`/score/${player.id}?rank=${player.rank}`}
-                    key={player.id}
-                  >
-                    <Appointment key={player.id}>
-                      <span>{player.rank}º</span>
-
-                      <div>
-                        {player.avatar_url !== null ? (
-                          <img src={player.avatar_url} alt={player.name} />
-                        ) : (
-                          <img src={avatarDefaultImg} alt={user.name} />
-                        )}
-
-                        <strong>{player.name}</strong>
-                        <span>{player.score} pts</span>
-                      </div>
-                    </Appointment>
-                  </Link>
-                ))
-              : players.map((player) => (
-                  <Link
-                    to={`/score/${player.id}?rank=${player.rank}`}
-                    key={player.id}
-                  >
-                    <Appointment key={player.id}>
-                      <span>{player.rank}º</span>
-
-                      <div>
-                        {player.avatar_url !== null ? (
-                          <img src={player.avatar_url} alt={player.name} />
-                        ) : (
-                          <img src={avatarDefaultImg} alt={user.name} />
-                        )}
-
-                        <strong>{player.name}</strong>
-                        <span>{player.score} pts</span>
-                      </div>
-                    </Appointment>
-                  </Link>
+          ) : (
+            <NextAppointment>
+              <strong>Top 3</strong>
+              <div>
+                {top3.map((item) => (
+                  <div key={item.id}>
+                    {item.rank === 1 ? (
+                      <FaCrown size={28} color="#f1c40f" />
+                    ) : null}
+                    {item.rank === 2 ? (
+                      <FaCrown size={28} color="#95a5a6" />
+                    ) : null}
+                    {item.rank === 3 ? (
+                      <FaCrown size={28} color="#e67e22" />
+                    ) : null}
+                    {item.avatar_url === null ? (
+                      <img src={avatarDefaultImg} alt={item.name} />
+                    ) : (
+                      <img src={item.avatar_url} alt={item.name} />
+                    )}
+                    <strong>{item.name}</strong>
+                    <span>{item.score} pts</span>
+                  </div>
                 ))}
-          </Section>
+              </div>
+            </NextAppointment>
+          )}
+
+          {!loading ? (
+            <Section>
+              <strong>Top 10</strong>
+              {user.role === 'player'
+                ? playerUser.map((player) => (
+                    <Link
+                      to={`/score/${player.id}?rank=${player.rank}`}
+                      key={player.id}
+                    >
+                      <Appointment key={player.id}>
+                        <span>{player.rank}º</span>
+
+                        <div>
+                          {player.avatar_url !== null ? (
+                            <img src={player.avatar_url} alt={player.name} />
+                          ) : (
+                            <img src={avatarDefaultImg} alt={user.name} />
+                          )}
+
+                          <strong>{player.name}</strong>
+                          <span>{player.score} pts</span>
+                        </div>
+                      </Appointment>
+                    </Link>
+                  ))
+                : players.map((player) => (
+                    <Link
+                      to={`/score/${player.id}?rank=${player.rank}`}
+                      key={player.id}
+                    >
+                      <Appointment key={player.id}>
+                        <span>{player.rank}º</span>
+
+                        <div>
+                          {player.avatar_url !== null ? (
+                            <img src={player.avatar_url} alt={player.name} />
+                          ) : (
+                            <img src={avatarDefaultImg} alt={user.name} />
+                          )}
+
+                          <strong>{player.name}</strong>
+                          <span>{player.score} pts</span>
+                        </div>
+                      </Appointment>
+                    </Link>
+                  ))}
+            </Section>
+          ) : null}
         </Schedule>
       </Content>
     </Container>

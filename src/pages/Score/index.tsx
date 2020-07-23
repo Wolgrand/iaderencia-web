@@ -6,7 +6,7 @@ import ptBR from 'date-fns/locale/pt-BR';
 import 'react-day-picker/lib/style.css';
 import { FiPower, FiSettings } from 'react-icons/fi';
 import Icon from '@material-ui/core/Icon';
-import { Line, Circle } from 'rc-progress';
+import { Line } from 'rc-progress';
 import { useToast } from '../../hooks/toast';
 import ToggleSwitch from '../../components/ToggleSwitch';
 import ToggleSwitchDisabled from '../../components/ToggleSwitchDisabled';
@@ -29,13 +29,10 @@ import {
 import { useAuth } from '../../hooks/auth';
 import api from '../../services/api';
 import Button from '../../components/Button';
-import Footer from '../../components/Footer';
+import FacebookCircularProgress from '../../components/Loading';
+
 import avatarDefaultImg from '../../assets/avatar.png';
 import logo from '../../assets/logo.png';
-
-interface ObjectCriteria {
-  id: string;
-}
 
 interface Criteria {
   id: string;
@@ -75,6 +72,7 @@ const Score: React.FC = () => {
   const [score, setScore] = useState(0);
   const [multipliedScore, setMultipliedScore] = useState(0);
   const [toggleDisabled, setToggleDisabled] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [selectedMultiply, setSelectedMultiply] = useState(false);
   const [player, setPlayer] = useState<Player | undefined>();
@@ -87,21 +85,20 @@ const Score: React.FC = () => {
   const { id } = useParams();
 
   useEffect(() => {
+    setLoading(true);
     api.get(`/players/${id}`).then((response) => {
       setPlayer(response.data);
     });
-  }, [id]);
 
-  useEffect(() => {
-    api.get(`/criterias/`).then((response) => {
-      setCriterias(response.data);
-    });
-  }, []);
-
-  useEffect(() => {
     api.get(`/transactions/${id}`).then((response) => {
       setTransactions(response.data);
     });
+
+    api.get(`/criterias/`).then((response) => {
+      setCriterias(response.data);
+    });
+
+    setLoading(false);
   }, [id]);
 
   useEffect(() => {
@@ -204,250 +201,254 @@ const Score: React.FC = () => {
           </Profile>
         </HeaderContent>
       </Header>
-      <Content>
-        <Calendar>
-          <Avatar>
-            <PlayerProfile>
-              {player && player.avatar_url ? (
-                <img src={player.avatar_url} alt={player.name} />
-              ) : (
-                <img src={avatarDefaultImg} alt="avatar" />
-              )}
-
-              <span>{rank}</span>
-              <strong>{player ? player.name : ''}</strong>
-              <p>{player ? player.score : ''} pts</p>
-            </PlayerProfile>
-
-            <Reward>
-              <strong>Recompensas</strong>
-              <p>Caixa de Chocolate - 1000pts</p>
-              {player && player.score / 1000 <= 1 ? (
-                <div>
-                  <Line
-                    percent={(player.score / 1000) * 100}
-                    strokeWidth={6}
-                    trailWidth={5}
-                    strokeColor="#ff9000"
-                    strokeLinecap="round"
-                  />
-                  <p>{Math.ceil((player.score / 1000) * 100)}%</p>
-                </div>
-              ) : (
-                <div>
-                  <Line
-                    percent={100}
-                    strokeWidth={6}
-                    trailWidth={5}
-                    strokeColor="#27ae60"
-                    strokeLinecap="round"
-                  />
-                  <p>100%</p>
-                </div>
-              )}
-
-              <p>Pen Drive - 2500pts</p>
-              {player && player.score / 2500 <= 1 ? (
-                <div>
-                  <Line
-                    percent={(player.score / 2500) * 100}
-                    strokeWidth={6}
-                    trailWidth={5}
-                    strokeColor="#ff9000"
-                    strokeLinecap="round"
-                  />
-                  <p>{Math.ceil((player.score / 2500) * 100)}%</p>
-                </div>
-              ) : (
-                <div>
-                  <Line
-                    percent={100}
-                    strokeWidth={6}
-                    trailWidth={5}
-                    strokeColor="#27ae60"
-                    strokeLinecap="round"
-                  />
-                  <p>100%</p>
-                </div>
-              )}
-
-              <p>Livro Técnico - 3500pts</p>
-              {player && player.score / 3500 <= 1 ? (
-                <div>
-                  <Line
-                    percent={(player.score / 3500) * 100}
-                    strokeWidth={6}
-                    trailWidth={5}
-                    strokeColor="#ff9000"
-                    strokeLinecap="round"
-                  />
-                  <p>{Math.ceil((player.score / 3500) * 100)}%</p>
-                </div>
-              ) : (
-                <div>
-                  <Line
-                    percent={100}
-                    strokeWidth={6}
-                    trailWidth={5}
-                    strokeColor="#27ae60"
-                    strokeLinecap="round"
-                  />
-                  <p>100%</p>
-                </div>
-              )}
-
-              <p>Fone de Ouvido - 5000pts</p>
-              {player && player.score / 5000 <= 1 ? (
-                <div>
-                  <Line
-                    percent={(player.score / 5000) * 100}
-                    strokeWidth={6}
-                    trailWidth={5}
-                    strokeColor="#ff9000"
-                    strokeLinecap="round"
-                  />
-                  <p>{Math.ceil((player.score / 5000) * 100)}%</p>
-                </div>
-              ) : (
-                <div>
-                  <Line
-                    percent={100}
-                    strokeWidth={6}
-                    trailWidth={5}
-                    strokeColor="#27ae60"
-                    strokeLinecap="round"
-                  />
-                  <p>100%</p>
-                </div>
-              )}
-
-              <p>Leitor de Livros - 7500pts</p>
-              {player && player.score / 7500 <= 1 ? (
-                <div>
-                  <Line
-                    percent={(player.score / 7500) * 100}
-                    strokeWidth={6}
-                    trailWidth={5}
-                    strokeColor="#ff9000"
-                    strokeLinecap="round"
-                  />
-                  <p>{Math.ceil((player.score / 7500) * 100)}%</p>
-                </div>
-              ) : (
-                <div>
-                  <Line
-                    percent={100}
-                    strokeWidth={6}
-                    trailWidth={5}
-                    strokeColor="#27ae60"
-                    strokeLinecap="round"
-                  />
-                  <p>100%</p>
-                </div>
-              )}
-            </Reward>
-          </Avatar>
-
-          {/*               <section>
-                <span>Conquistas</span>
-                <ul>
-                  <li />
-                  <li />
-                  <li />
-                  <li />
-                  <li />
-                  <li />
-                  <li />
-                  <li />
-                  <li />
-                  <li />
-                  <li />
-                  <li />
-                  <li />
-                  <li />
-                  <li />
-                  <li />
-                  <li />
-                  <li />
-                  <li />
-                  <li />
-                </ul>
-              </section> */}
-
-          <section>
-            <br />
-          </section>
-        </Calendar>
-        <Schedule>
-          <h1>Adicionar Pontuação</h1>
-
-          <p>
-            {isToday(selectedDate) && <span>Hoje</span>}
-            <span>{selectedDateasText}</span>
-            <span>{selectedWeekDay}</span>
-          </p>
-
-          {user.role === 'pmo' ? (
-            <Section>
-              <strong>
-                Selecionar Critério
-                {selectedMultiply === true ? (
-                  <p>Pontuação: {Math.ceil(multipliedScore)}</p>
+      {loading ? (
+        <FacebookCircularProgress />
+      ) : (
+        <Content>
+          <Calendar>
+            <Avatar>
+              <PlayerProfile>
+                {player && player.avatar_url ? (
+                  <img src={player.avatar_url} alt={player.name} />
                 ) : (
-                  <p>Pontuação: {score}</p>
+                  <img src={avatarDefaultImg} alt="avatar" />
                 )}
-                <div>
-                  {score > 0 ? (
-                    <ToggleSwitch toggleMultiply={toggleMultiply} />
+
+                <span>{rank}</span>
+                <strong>{player ? player.name : ''}</strong>
+                <p>{player ? player.score : ''} pts</p>
+              </PlayerProfile>
+
+              <Reward>
+                <strong>Recompensas</strong>
+                <p>Caixa de Chocolate - 1000pts</p>
+                {player && player.score / 1000 <= 1 ? (
+                  <div>
+                    <Line
+                      percent={(player.score / 1000) * 100}
+                      strokeWidth={6}
+                      trailWidth={5}
+                      strokeColor="#ff9000"
+                      strokeLinecap="round"
+                    />
+                    <p>{Math.ceil((player.score / 1000) * 100)}%</p>
+                  </div>
+                ) : (
+                  <div>
+                    <Line
+                      percent={100}
+                      strokeWidth={6}
+                      trailWidth={5}
+                      strokeColor="#27ae60"
+                      strokeLinecap="round"
+                    />
+                    <p>100%</p>
+                  </div>
+                )}
+
+                <p>Pen Drive - 2500pts</p>
+                {player && player.score / 2500 <= 1 ? (
+                  <div>
+                    <Line
+                      percent={(player.score / 2500) * 100}
+                      strokeWidth={6}
+                      trailWidth={5}
+                      strokeColor="#ff9000"
+                      strokeLinecap="round"
+                    />
+                    <p>{Math.ceil((player.score / 2500) * 100)}%</p>
+                  </div>
+                ) : (
+                  <div>
+                    <Line
+                      percent={100}
+                      strokeWidth={6}
+                      trailWidth={5}
+                      strokeColor="#27ae60"
+                      strokeLinecap="round"
+                    />
+                    <p>100%</p>
+                  </div>
+                )}
+
+                <p>Livro Técnico - 3500pts</p>
+                {player && player.score / 3500 <= 1 ? (
+                  <div>
+                    <Line
+                      percent={(player.score / 3500) * 100}
+                      strokeWidth={6}
+                      trailWidth={5}
+                      strokeColor="#ff9000"
+                      strokeLinecap="round"
+                    />
+                    <p>{Math.ceil((player.score / 3500) * 100)}%</p>
+                  </div>
+                ) : (
+                  <div>
+                    <Line
+                      percent={100}
+                      strokeWidth={6}
+                      trailWidth={5}
+                      strokeColor="#27ae60"
+                      strokeLinecap="round"
+                    />
+                    <p>100%</p>
+                  </div>
+                )}
+
+                <p>Fone de Ouvido - 5000pts</p>
+                {player && player.score / 5000 <= 1 ? (
+                  <div>
+                    <Line
+                      percent={(player.score / 5000) * 100}
+                      strokeWidth={6}
+                      trailWidth={5}
+                      strokeColor="#ff9000"
+                      strokeLinecap="round"
+                    />
+                    <p>{Math.ceil((player.score / 5000) * 100)}%</p>
+                  </div>
+                ) : (
+                  <div>
+                    <Line
+                      percent={100}
+                      strokeWidth={6}
+                      trailWidth={5}
+                      strokeColor="#27ae60"
+                      strokeLinecap="round"
+                    />
+                    <p>100%</p>
+                  </div>
+                )}
+
+                <p>Leitor de Livros - 7500pts</p>
+                {player && player.score / 7500 <= 1 ? (
+                  <div>
+                    <Line
+                      percent={(player.score / 7500) * 100}
+                      strokeWidth={6}
+                      trailWidth={5}
+                      strokeColor="#ff9000"
+                      strokeLinecap="round"
+                    />
+                    <p>{Math.ceil((player.score / 7500) * 100)}%</p>
+                  </div>
+                ) : (
+                  <div>
+                    <Line
+                      percent={100}
+                      strokeWidth={6}
+                      trailWidth={5}
+                      strokeColor="#27ae60"
+                      strokeLinecap="round"
+                    />
+                    <p>100%</p>
+                  </div>
+                )}
+              </Reward>
+            </Avatar>
+
+            {/*               <section>
+                  <span>Conquistas</span>
+                  <ul>
+                    <li />
+                    <li />
+                    <li />
+                    <li />
+                    <li />
+                    <li />
+                    <li />
+                    <li />
+                    <li />
+                    <li />
+                    <li />
+                    <li />
+                    <li />
+                    <li />
+                    <li />
+                    <li />
+                    <li />
+                    <li />
+                    <li />
+                    <li />
+                  </ul>
+                </section> */}
+
+            <section>
+              <br />
+            </section>
+          </Calendar>
+          <Schedule>
+            <h1>Adicionar Pontuação</h1>
+
+            <p>
+              {isToday(selectedDate) && <span>Hoje</span>}
+              <span>{selectedDateasText}</span>
+              <span>{selectedWeekDay}</span>
+            </p>
+
+            {user.role === 'pmo' ? (
+              <Section>
+                <strong>
+                  Selecionar Critério
+                  {selectedMultiply === true ? (
+                    <p>Pontuação: {Math.ceil(multipliedScore)}</p>
                   ) : (
-                    <ToggleSwitchDisabled toggleMultiply={toggleMultiply} />
+                    <p>Pontuação: {score}</p>
                   )}
+                  <div>
+                    {score > 0 ? (
+                      <ToggleSwitch toggleMultiply={toggleMultiply} />
+                    ) : (
+                      <ToggleSwitchDisabled toggleMultiply={toggleMultiply} />
+                    )}
 
-                  <p>1,5x</p>
+                    <p>1,5x</p>
+                  </div>
+                  <Button type="submit" onClick={handleSave}>
+                    Salvar
+                  </Button>
+                </strong>
+
+                <ItemsGrid>
+                  {criterias.map((criteria) => (
+                    <li
+                      key={criteria.id}
+                      onClick={() =>
+                        handleSelectItem(criteria.id, criteria.score)
+                      }
+                      className={
+                        selectedCriteria.includes(criteria.id) ? 'selected' : ''
+                      }
+                    >
+                      <Icon>{criteria.icon}</Icon>
+                      <span>{criteria.title}</span>
+                    </li>
+                  ))}
+                </ItemsGrid>
+              </Section>
+            ) : null}
+
+            <Section>
+              <strong>Histórico de Pontuação</strong>
+
+              {transactions.map((transaction) => (
+                <div key={transaction.id}>
+                  {' '}
+                  <h3>
+                    {format(parseISO(transaction.created_at), 'dd/MM/yyyy')}
+                  </h3>
+                  {transaction.transaction_criterias.map((criteria) => (
+                    <p>
+                      {criteria.criteria.title} - {criteria.criteria.score}pts
+                    </p>
+                  ))}
                 </div>
-                <Button type="submit" onClick={handleSave}>
-                  Salvar
-                </Button>
-              </strong>
-
-              <ItemsGrid>
-                {criterias.map((criteria) => (
-                  <li
-                    key={criteria.id}
-                    onClick={() =>
-                      handleSelectItem(criteria.id, criteria.score)
-                    }
-                    className={
-                      selectedCriteria.includes(criteria.id) ? 'selected' : ''
-                    }
-                  >
-                    <Icon>{criteria.icon}</Icon>
-                    <span>{criteria.title}</span>
-                  </li>
-                ))}
-              </ItemsGrid>
+              ))}
             </Section>
-          ) : null}
-
-          <Section>
-            <strong>Histórico de Pontuação</strong>
-
-            {transactions.map((transaction) => (
-              <div key={transaction.id}>
-                {' '}
-                <h3>
-                  {format(parseISO(transaction.created_at), 'dd/MM/yyyy')}
-                </h3>
-                {transaction.transaction_criterias.map((criteria) => (
-                  <p>
-                    {criteria.criteria.title} - {criteria.criteria.score}pts
-                  </p>
-                ))}
-              </div>
-            ))}
-          </Section>
-        </Schedule>
-      </Content>
+          </Schedule>
+        </Content>
+      )}
     </Container>
   );
 };
