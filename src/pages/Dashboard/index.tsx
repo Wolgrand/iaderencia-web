@@ -109,19 +109,19 @@ const Dashboard: React.FC = () => {
         </HeaderContent>
       </Header>
       <Content>
-        <Schedule>
-          <h1>Ranking Gerentes de Projetos</h1>
-          <p>
-            {isToday(selectedDate) && <span>Hoje</span>}
-            <span>{selectedDateasText}</span>
-            <span>{selectedWeekDay}</span>
-          </p>
-
-          {loading ? (
-            <div>
-              <FacebookCircularProgress />
-            </div>
-          ) : (
+        {loading ? (
+          <div className="loading">
+            <FacebookCircularProgress />
+            <p>Carregando...</p>
+          </div>
+        ) : (
+          <Schedule>
+            <h1>Ranking Gerentes de Projetos</h1>
+            <p>
+              {isToday(selectedDate) && <span>Hoje</span>}
+              <span>{selectedDateasText}</span>
+              <span>{selectedWeekDay}</span>
+            </p>
             <NextAppointment>
               <strong>Top 3</strong>
               <div>
@@ -147,9 +147,6 @@ const Dashboard: React.FC = () => {
                 ))}
               </div>
             </NextAppointment>
-          )}
-
-          {!loading ? (
             <Section>
               <strong>Top 10</strong>
               {user.role === 'player'
@@ -196,8 +193,8 @@ const Dashboard: React.FC = () => {
                     </Link>
                   ))}
             </Section>
-          ) : null}
-        </Schedule>
+          </Schedule>
+        )}
       </Content>
     </Container>
   );

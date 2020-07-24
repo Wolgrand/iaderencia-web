@@ -80,19 +80,15 @@ export const Content = styled.main`
   max-width: 1120px;
   margin: 38px auto;
   display: flex;
+
+  .loading {
+    margin: 25vh auto;
+  }
 `;
 
 export const Schedule = styled.div`
   flex: 1;
   margin-right: 120px;
-
-  .makeStyles-root-1 {
-    display: flex;
-    align-items: center;
-    align-content: center;
-    margin-top: 10%;
-    margin-left: 50%;
-  }
 
   h1 {
     font-size: 36px;

@@ -202,7 +202,10 @@ const Score: React.FC = () => {
         </HeaderContent>
       </Header>
       {loading ? (
-        <FacebookCircularProgress />
+        <div className="loading">
+          <FacebookCircularProgress />
+          <p>Carregando...</p>
+        </div>
       ) : (
         <Content>
           <Calendar>
