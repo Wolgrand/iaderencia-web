@@ -39,9 +39,12 @@ import {
 import avatarDefaultImg from '../../assets/avatar.png';
 
 import { useAuth } from '../../hooks/auth';
+import { useToast } from '../../hooks/toast';
 import api from '../../services/api';
 import Footer from '../../components/Footer';
 import logo from '../../assets/logo.png';
+import ModalNewCriteria from '../../components/ModalNewCriteria';
+import ModalEditCriteria from '../../components/ModalEditCriteria';
 
 interface CreateUserFormData {
   name: string;
@@ -53,7 +56,7 @@ interface CreateUserFormData {
 }
 
 interface Criteria {
-  id?: string;
+  id: string;
   title: string;
   score: number;
   icon: string;
@@ -117,17 +120,21 @@ const Admin: React.FC = () => {
   const [players, setPlayers] = useState<Players[]>([]);
 
   const { signOut, user } = useAuth();
+  const { addToast } = useToast();
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedDate, setSelectedDate] = useState(new Date());
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, setLoading] = useState(false);
-  const [newCriteria, setNewCriteria] = useState(false);
+
   const [editRow, setEditRow] = useState<string[]>([]);
 
-  const [criteriaTitle, setCriteriaTitle] = useState('');
-  const [criteriaIcon, setCriteriaIcon] = useState('');
-  const [criteriaScore, setCriteriaScore] = useState('');
+  const [editingCriteria, setEditingCriteria] = useState<Criteria>(
+    {} as Criteria,
+  );
 
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
@@ -154,14 +161,6 @@ const Admin: React.FC = () => {
     });
   }, [selectedDate]);
 
-  const handleShowEditRow = (): void => {
-    setNewCriteria(!newCriteria);
-  };
-
-  const handleIgnoreNewCriteria = (): void => {
-    setNewCriteria(!newCriteria);
-  };
-
   const handleRowEdition = (title: string): void => {
     const alreadySelected = editRow.findIndex((item) => item === title);
 
@@ -173,17 +172,97 @@ const Admin: React.FC = () => {
     }
   };
 
-  const addCriteria = async (): Promise<void> => {
-    const newCriteriaItem = {
-      title: criteriaTitle,
-      icon: criteriaIcon,
-      score: criteriaScore,
-    };
+  function toggleModal(): void {
+    setModalOpen(!modalOpen);
+  }
+  function toggleEditModal(): void {
+    setEditModalOpen(!editModalOpen);
+  }
 
-    setNewCriteria(!newCriteria);
+  function handleEditCriteria(data: Criteria): void {
+    toggleEditModal();
+    setEditingCriteria(data);
+  }
 
-    await api.post('/criterias', newCriteriaItem);
-  };
+  async function handleUpdateCriteria(
+    criteria: Omit<Criteria, 'id'>,
+  ): Promise<void> {
+    try {
+      const findIndex = criterias.findIndex((f) => f.id === editingCriteria.id);
+
+      Object.assign(editingCriteria, {
+        title: criteria.title,
+        icon: criteria.icon,
+        score: criteria.score,
+      });
+
+      criterias[findIndex] = editingCriteria;
+
+      api
+        .put(`criterias/${editingCriteria.id}`, editingCriteria)
+        .then((response) => {
+          setCriterias(criterias);
+          addToast({
+            type: 'success',
+            title: 'Critério Atualizado',
+            description: `O critério ${criteria.title} foi adicionado com sucesso!`,
+          });
+        });
+    } catch (error) {
+      addToast({
+        type: 'error',
+        title: 'Erro na atualização do critério',
+        description: `Houve um erro ao atualizar o critério, tente novamente!`,
+      });
+    }
+  }
+
+  async function handleAddCriteria(
+    criteria: Omit<Criteria, 'id'>,
+  ): Promise<void> {
+    try {
+      const newCriteria = { ...criteria };
+
+      await api.post('/criterias', newCriteria).then((response) => {
+        setCriterias([...criterias, response.data]);
+        addToast({
+          type: 'success',
+          title: 'Critério Cadastrado',
+          description: `O novo critério ${criteria.title} foi adicionado com sucesso!`,
+        });
+      });
+    } catch (err) {
+      addToast({
+        type: 'error',
+        title: 'Erro no cadastro do novo critério',
+        description: `Houve um erro ao adicionar o novo critério, tente novamente!`,
+      });
+    }
+  }
+
+  async function handleDeleteCriteria(id: string): Promise<void> {
+    try {
+      await api.delete(`/criterias/${id}`);
+
+      const updatedList = criterias.filter((criteria) => criteria.id !== id);
+      const deletedCriteria = criterias.filter(
+        (criteria) => criteria.id === id,
+      );
+
+      setCriterias(updatedList);
+      addToast({
+        type: 'success',
+        title: 'Critério Excluído',
+        description: `Exclusão do critério ${deletedCriteria[0].title} realizada com sucesso!`,
+      });
+    } catch (err) {
+      addToast({
+        type: 'error',
+        title: `Erro na exclusão do critério`,
+        description: `Houve um erro ao excluir o critério, tente novamente!`,
+      });
+    }
+  }
 
   return (
     <Container>
@@ -252,7 +331,7 @@ const Admin: React.FC = () => {
                         <th>Score</th>
                         <th>
                           {' '}
-                          <button type="button" onClick={handleShowEditRow}>
+                          <button type="button" onClick={toggleModal}>
                             <FiPlusSquare />
                           </button>
                         </th>
@@ -260,114 +339,42 @@ const Admin: React.FC = () => {
                     </thead>
 
                     <tbody>
-                      {newCriteria ? (
-                        <tr>
-                          <td></td>
-                          <td>
-                            <input
-                              onChange={(e) => setCriteriaIcon(e.target.value)}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              onChange={(e) => setCriteriaTitle(e.target.value)}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              onChange={(e) => setCriteriaScore(e.target.value)}
-                            />
-                          </td>
-                          <td>
-                            <div>
-                              {' '}
-                              <button
-                                type="button"
-                                className="accept"
-                                onClick={addCriteria}
-                              >
-                                <FiCheck />
-                              </button>
-                              <button
-                                type="button"
-                                className="ignore"
-                                onClick={handleIgnoreNewCriteria}
-                              >
-                                <FiX />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ) : null}
+                      <ModalNewCriteria
+                        isOpen={modalOpen}
+                        setIsOpen={toggleModal}
+                        handleAddCriteria={handleAddCriteria}
+                      />
+                      <ModalEditCriteria
+                        isOpen={editModalOpen}
+                        setIsOpen={toggleEditModal}
+                        editingCriteria={editingCriteria}
+                        handleUpdateCriteria={handleUpdateCriteria}
+                      />
                       {criterias.map((item) => (
                         <tr>
                           <td>{criterias.indexOf(item) + 1}</td>
                           <td>
-                            {editRow.includes(item.title) ? (
-                              <input
-                                defaultValue={item.icon}
-                                onChange={(e) =>
-                                  setCriteriaIcon(e.target.value)
-                                }
-                              />
-                            ) : (
-                              <Icon>{item.icon}</Icon>
-                            )}
+                            <Icon>{item.icon}</Icon>
                           </td>
-                          <td>
-                            {editRow.includes(item.title) ? (
-                              <input
-                                defaultValue={item.title}
-                                onChange={(e) =>
-                                  setCriteriaTitle(e.target.value)
-                                }
-                              />
-                            ) : (
-                              item.title
-                            )}
-                          </td>
+                          <td>{item.title}</td>
+
+                          <td>{item.score}</td>
 
                           <td>
-                            {editRow.includes(item.title) ? (
-                              <input
-                                defaultValue={String(item.score)}
-                                onChange={(e) =>
-                                  setCriteriaScore(e.target.value)
-                                }
-                              />
-                            ) : (
-                              item.score
-                            )}
-                          </td>
-
-                          <td>
-                            {editRow.includes(item.title) ? (
-                              <div>
-                                {' '}
-                                <button type="button" className="accept">
-                                  <FiCheck />
-                                </button>
-                                <button
-                                  type="button"
-                                  className="ignore"
-                                  onClick={() => handleRowEdition(item.title)}
-                                >
-                                  <FiX />
-                                </button>
-                              </div>
-                            ) : (
-                              <div>
-                                <button
-                                  type="button"
-                                  onClick={() => handleRowEdition(item.title)}
-                                >
-                                  <FiEdit />
-                                </button>
-                                <button type="button">
-                                  <FiTrash />
-                                </button>
-                              </div>
-                            )}
+                            <div>
+                              <button
+                                type="button"
+                                onClick={() => handleEditCriteria(item)}
+                              >
+                                <FiEdit />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteCriteria(item.id)}
+                              >
+                                <FiTrash />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -388,7 +395,7 @@ const Admin: React.FC = () => {
 
                         <th>
                           {' '}
-                          <button type="button" onClick={handleShowEditRow}>
+                          <button type="button">
                             <FiPlusSquare />
                           </button>
                         </th>
@@ -401,24 +408,14 @@ const Admin: React.FC = () => {
                           <td>{players.indexOf(item) + 1}</td>
                           <td>
                             {editRow.includes(item.name) ? (
-                              <input
-                                defaultValue={item.company}
-                                onChange={(e) =>
-                                  setCriteriaIcon(e.target.value)
-                                }
-                              />
+                              <input defaultValue={item.company} />
                             ) : (
                               item.company
                             )}
                           </td>
                           <td>
                             {editRow.includes(item.name) ? (
-                              <input
-                                defaultValue={item.department}
-                                onChange={(e) =>
-                                  setCriteriaTitle(e.target.value)
-                                }
-                              />
+                              <input defaultValue={item.department} />
                             ) : (
                               item.department
                             )}
@@ -426,12 +423,7 @@ const Admin: React.FC = () => {
 
                           <td>
                             {editRow.includes(item.name) ? (
-                              <input
-                                defaultValue={item.name}
-                                onChange={(e) =>
-                                  setCriteriaTitle(e.target.value)
-                                }
-                              />
+                              <input defaultValue={item.name} />
                             ) : (
                               item.name
                             )}
@@ -439,12 +431,7 @@ const Admin: React.FC = () => {
 
                           <td>
                             {editRow.includes(item.name) ? (
-                              <input
-                                defaultValue={item.score}
-                                onChange={(e) =>
-                                  setCriteriaTitle(e.target.value)
-                                }
-                              />
+                              <input defaultValue={item.score} />
                             ) : (
                               item.score
                             )}
@@ -489,7 +476,6 @@ const Admin: React.FC = () => {
           </Section>
         </Schedule>
       </Content>
-      <Footer> v1.0.0 © 2020 WN Studio</Footer>
     </Container>
   );
 };
