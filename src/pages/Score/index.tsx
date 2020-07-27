@@ -179,10 +179,18 @@ const Score: React.FC = () => {
 
           <Profile>
             {user.role === 'pmo' ? (
-              <button type="button" onClick={signOut}>
-                <FiSettings />
-              </button>
+              <Link to="/admin">
+                <button type="button">
+                  <FiSettings />
+                </button>
+              </Link>
             ) : null}
+
+            {user.avatar_url === null ? (
+              <img src={avatarDefaultImg} alt={user.name} />
+            ) : (
+              <img src={user.avatar_url} alt={user.name} />
+            )}
 
             {user.avatar_url === null ? (
               <img src={avatarDefaultImg} alt={user.name} />

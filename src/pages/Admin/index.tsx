@@ -41,7 +41,7 @@ import avatarDefaultImg from '../../assets/avatar.png';
 import { useAuth } from '../../hooks/auth';
 import { useToast } from '../../hooks/toast';
 import api from '../../services/api';
-import Footer from '../../components/Footer';
+
 import logo from '../../assets/logo.png';
 import ModalNewCriteria from '../../components/ModalNewCriteria';
 import ModalEditCriteria from '../../components/ModalEditCriteria';
@@ -269,7 +269,7 @@ const Admin: React.FC = () => {
       <Header>
         <HeaderContent>
           <Link to="/">
-            <h1>PM-Gamification</h1>
+            <img src={logo} alt="PM-Gamification" />
           </Link>
           <button type="button" />
 
