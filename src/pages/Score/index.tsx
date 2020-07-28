@@ -192,11 +192,6 @@ const Score: React.FC = () => {
               <img src={user.avatar_url} alt={user.name} />
             )}
 
-            {user.avatar_url === null ? (
-              <img src={avatarDefaultImg} alt={user.name} />
-            ) : (
-              <img src={user.avatar_url} alt={user.name} />
-            )}
             <div>
               <span>Bem vindo,</span>
               <Link to="/profile">
