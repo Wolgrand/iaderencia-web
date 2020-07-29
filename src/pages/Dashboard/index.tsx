@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { isToday, format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
@@ -28,6 +28,8 @@ import FacebookCircularProgress from '../../components/Loading';
 interface Player {
   id: string;
   name: string;
+  company: string;
+  department: string;
   score: number;
   avatar_url: string;
   rank: number;
@@ -41,7 +43,6 @@ const Dashboard: React.FC = () => {
 
   const [players, setPlayers] = useState<Player[]>([]);
 
-  const [playerUser, setPlayerUser] = useState<Player[]>([]);
   const [top3, setTop3] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -55,9 +56,6 @@ const Dashboard: React.FC = () => {
       setTop3(response.data);
       setLoading(false);
     });
-
-    const data = players.filter((item) => item.id === user.id);
-    setPlayerUser(data);
   }, []);
 
   const selectedDateasText = useMemo(() => {
@@ -122,8 +120,33 @@ const Dashboard: React.FC = () => {
               <span>{selectedDateasText}</span>
               <span>{selectedWeekDay}</span>
             </p>
+            {/* <NextAppointment>
+              <strong>Top 3 - Departamentos</strong>
+              <div>
+                {top3.map((item) => (
+                  <div key={item.id}>
+                    {item.rank === 1 ? (
+                      <FaCrown size={28} color="#f1c40f" />
+                    ) : null}
+                    {item.rank === 2 ? (
+                      <FaCrown size={28} color="#95a5a6" />
+                    ) : null}
+                    {item.rank === 3 ? (
+                      <FaCrown size={28} color="#e67e22" />
+                    ) : null}
+                    {item.avatar_url === null ? (
+                      <img src={avatarDefaultImg} alt={item.name} />
+                    ) : (
+                      <img src={item.avatar_url} alt={item.name} />
+                    )}
+                    <strong>{item.name}</strong>
+                    <span>{item.score} pts</span>
+                  </div>
+                ))}
+              </div>
+            </NextAppointment> */}
             <NextAppointment>
-              <strong>Top 3</strong>
+              <strong>Top 3 - Gerentes de Projetos</strong>
               <div>
                 {top3.map((item) => (
                   <div key={item.id}>
@@ -150,27 +173,29 @@ const Dashboard: React.FC = () => {
             <Section>
               <strong>Top 10</strong>
               {user.role === 'player'
-                ? playerUser.map((player) => (
-                    <Link
-                      to={`/score/${player.id}?rank=${player.rank}`}
-                      key={player.id}
-                    >
-                      <Appointment key={player.id}>
-                        <span>{player.rank}º</span>
+                ? players
+                    .filter((p) => p.id === user.id)
+                    .map((player) => (
+                      <Link
+                        to={`/score/${player.id}?rank=${player.rank}`}
+                        key={player.id}
+                      >
+                        <Appointment key={player.id}>
+                          <span>{player.rank}º</span>
 
-                        <div>
-                          {player.avatar_url !== null ? (
-                            <img src={player.avatar_url} alt={player.name} />
-                          ) : (
-                            <img src={avatarDefaultImg} alt={user.name} />
-                          )}
+                          <div>
+                            {player.avatar_url !== null ? (
+                              <img src={player.avatar_url} alt={player.name} />
+                            ) : (
+                              <img src={avatarDefaultImg} alt={user.name} />
+                            )}
 
-                          <strong>{player.name}</strong>
-                          <span>{player.score} pts</span>
-                        </div>
-                      </Appointment>
-                    </Link>
-                  ))
+                            <strong>{player.name}</strong>
+                            <span>{player.score} pts</span>
+                          </div>
+                        </Appointment>
+                      </Link>
+                    ))
                 : players.map((player) => (
                     <Link
                       to={`/score/${player.id}?rank=${player.rank}`}
