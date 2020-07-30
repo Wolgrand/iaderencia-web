@@ -116,7 +116,7 @@ export const Schedule = styled.div`
   }
 `;
 
-export const NextAppointment = styled.div`
+export const TopGerentes = styled.div`
   margin-top: 46px;
 
   > strong {
@@ -154,6 +154,86 @@ export const NextAppointment = styled.div`
         top: 10%;
         content: '';
         background: #ff9000;
+      }
+
+      &:hover {
+        background: ${shade(0.1, '#3E3B47')};
+      }
+
+      img {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+      }
+
+      strong {
+        margin-left: 20px;
+        margin-right: 10px;
+        color: #fff;
+      }
+
+      span {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        color: #999591;
+        font-size: 18px;
+
+        svg {
+          color: #ff9000;
+          margin-right: 8px;
+        }
+      }
+    }
+  }
+`;
+
+export const TopDepartamentos = styled.div`
+  margin-top: 46px;
+
+  > strong {
+    color: #999591;
+    font-size: 20px;
+    font-weight: 400;
+    border-bottom: 1px solid #3e3b47;
+    display: block;
+    padding-bottom: 16px;
+  }
+
+  div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    div {
+      background: #3e3b47;
+      justify-content: space-around;
+      line-height: 50px;
+      flex: 1;
+      align-items: center;
+      padding: 14px 20px;
+      border-radius: 10px;
+      margin-top: 16px;
+      margin-right: 16px;
+      position: relative;
+      font-size: 20px;
+      transition: 0.2s;
+
+      > svg {
+        margin-right: 20px;
+      }
+
+      &::before {
+        position: absolute;
+        height: 80%;
+        width: 1px;
+        left: 0;
+        top: 10%;
+        content: '';
+        background: #ff9000;
+      }
+
+      &:hover {
+        background: ${shade(0.1, '#3E3B47')};
       }
 
       img {
@@ -232,6 +312,10 @@ export const Appointment = styled.div`
     padding: 16px 24px;
     border-radius: 10px;
     margin-left: 24px;
+
+    &:hover {
+      background: ${shade(0.1, '#3E3B47')};
+    }
 
     img {
       width: 56px;

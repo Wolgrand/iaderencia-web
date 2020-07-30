@@ -13,9 +13,10 @@ import {
   Profile,
   Content,
   Schedule,
-  NextAppointment,
+  TopGerentes,
   Appointment,
   Section,
+  TopDepartamentos,
 } from './styles';
 
 import avatarDefaultImg from '../../assets/avatar.png';
@@ -34,6 +35,11 @@ interface Player {
   avatar_url: string;
   rank: number;
 }
+interface Department {
+  department: string;
+  average: number;
+  rank: number;
+}
 
 const Dashboard: React.FC = () => {
   const { signOut, user } = useAuth();
@@ -44,12 +50,19 @@ const Dashboard: React.FC = () => {
   const [players, setPlayers] = useState<Player[]>([]);
 
   const [top3, setTop3] = useState<Player[]>([]);
+
+  const [top3Department, setTop3Department] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
     api.get(`/rank`).then((response) => {
       setPlayers(response.data);
+    });
+
+    api.get(`/departments`).then((response) => {
+      const { data } = response;
+      setTop3Department(data.filter((item: Department) => item.rank <= 3));
     });
 
     api.get(`/top3`).then((response) => {
@@ -120,11 +133,11 @@ const Dashboard: React.FC = () => {
               <span>{selectedDateasText}</span>
               <span>{selectedWeekDay}</span>
             </p>
-            {/* <NextAppointment>
+            <TopDepartamentos>
               <strong>Top 3 - Departamentos</strong>
               <div>
-                {top3.map((item) => (
-                  <div key={item.id}>
+                {top3Department.map((item) => (
+                  <div key={item.department}>
                     {item.rank === 1 ? (
                       <FaCrown size={28} color="#f1c40f" />
                     ) : null}
@@ -134,18 +147,14 @@ const Dashboard: React.FC = () => {
                     {item.rank === 3 ? (
                       <FaCrown size={28} color="#e67e22" />
                     ) : null}
-                    {item.avatar_url === null ? (
-                      <img src={avatarDefaultImg} alt={item.name} />
-                    ) : (
-                      <img src={item.avatar_url} alt={item.name} />
-                    )}
-                    <strong>{item.name}</strong>
-                    <span>{item.score} pts</span>
+
+                    <strong>{item.department}</strong>
+                    <span>{item.average} pts</span>
                   </div>
                 ))}
               </div>
-            </NextAppointment> */}
-            <NextAppointment>
+            </TopDepartamentos>
+            <TopGerentes>
               <strong>Top 3 - Gerentes de Projetos</strong>
               <div>
                 {top3.map((item) => (
@@ -169,7 +178,7 @@ const Dashboard: React.FC = () => {
                   </div>
                 ))}
               </div>
-            </NextAppointment>
+            </TopGerentes>
             <Section>
               <strong>Top 10</strong>
               {user.role === 'player'
