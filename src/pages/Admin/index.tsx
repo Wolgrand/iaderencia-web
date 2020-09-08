@@ -45,6 +45,8 @@ import api from '../../services/api';
 import logo from '../../assets/logo.png';
 import ModalNewCriteria from '../../components/ModalNewCriteria';
 import ModalEditCriteria from '../../components/ModalEditCriteria';
+import ModalNewReward from '../../components/ModalNewReward';
+import ModalEditReward from '../../components/ModalEditReward';
 
 interface CreateUserFormData {
   name: string;
@@ -60,6 +62,14 @@ interface Criteria {
   title: string;
   score: number;
   icon: string;
+}
+
+interface Reward {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  score: number;
 }
 
 interface Players {
@@ -116,6 +126,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const Admin: React.FC = () => {
   const [criterias, setCriterias] = useState<Criteria[]>([]);
+  const [rewards, setRewards] = useState<Reward[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [players, setPlayers] = useState<Players[]>([]);
 
@@ -136,6 +147,8 @@ const Admin: React.FC = () => {
     {} as Criteria,
   );
 
+  const [editingReward, setEditingReward] = useState<Reward>({} as Reward);
+
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
@@ -147,7 +160,11 @@ const Admin: React.FC = () => {
     api.get(`/criterias`).then((response) => {
       setCriterias(response.data);
     });
-  }, [criterias]);
+
+    api.get(`/rewards`).then((response) => {
+      setRewards(response.data);
+    });
+  }, [setCriterias, setRewards]);
 
   const selectedDateasText = useMemo(() => {
     return format(selectedDate, " 'Dia' dd 'de' MMMM", {
@@ -182,6 +199,84 @@ const Admin: React.FC = () => {
   function handleEditCriteria(data: Criteria): void {
     toggleEditModal();
     setEditingCriteria(data);
+  }
+
+  function handleEditReward(data: Reward): void {
+    toggleEditModal();
+    setEditingReward(data);
+  }
+
+  async function handleUpdateReward(reward: Omit<Reward, 'id'>): Promise<void> {
+    try {
+      const findIndex = rewards.findIndex((f) => f.id === editingReward.id);
+
+      Object.assign(editingReward, {
+        title: reward.title,
+        description: reward.description,
+        icon: reward.icon,
+        score: reward.score,
+      });
+
+      rewards[findIndex] = editingReward;
+
+      api.put(`rewards/${editingReward.id}`, editingReward).then((response) => {
+        setRewards(rewards);
+        addToast({
+          type: 'success',
+          title: 'Conquista Atualizada',
+          description: `A conquista ${reward.title} foi atualizada com sucesso!`,
+        });
+      });
+    } catch (error) {
+      addToast({
+        type: 'error',
+        title: 'Erro na atualização da conquista',
+        description: `Houve um erro ao atualizar a conquista, tente novamente!`,
+      });
+    }
+  }
+
+  async function handleAddReward(reward: Omit<Reward, 'id'>): Promise<void> {
+    try {
+      const newReward = { ...reward };
+
+      await api.post('/rewards', newReward).then((response) => {
+        setRewards([...rewards, response.data]);
+        addToast({
+          type: 'success',
+          title: 'Conquista Cadastrada',
+          description: `A nova conquista ${reward.title} foi adicionada com sucesso!`,
+        });
+      });
+    } catch (err) {
+      addToast({
+        type: 'error',
+        title: 'Erro no cadastro da nova conquista',
+        description: `Houve um erro ao adicionar a nova conquista, tente novamente!`,
+      });
+    }
+  }
+
+  async function handleDeleteReward(id: string): Promise<void> {
+    try {
+      await api.delete(`/rewards/${id}`);
+
+      const updatedList = rewards.filter((reward) => reward.id !== id);
+      const deletedReward = rewards.filter((reward) => reward.id === id);
+
+      setCriterias(updatedList);
+      addToast({
+        type: 'success',
+        title: 'Conquista Excluída',
+        description: `Exclusão da conquista ${deletedReward[0].title} realizada com sucesso!`,
+      });
+    } catch (err) {
+      addToast({
+        type: 'error',
+        title: `Erro na exclusão da conquista`,
+        description: `Houve um erro ao excluir a conquista, tente novamente!`,
+      });
+    }
   }
 
   async function handleUpdateCriteria(
@@ -318,6 +413,7 @@ const Admin: React.FC = () => {
                 <Tabs value={value} onChange={handleChange}>
                   <Tab label="Critérios" {...a11yProps(0)} />
                   <Tab label="Jogadores" {...a11yProps(1)} />
+                  <Tab label="Conquistas" {...a11yProps(2)} />
                 </Tabs>
               </AppBar>
               <TabPanel value={value} index={0}>
@@ -351,7 +447,7 @@ const Admin: React.FC = () => {
                         handleUpdateCriteria={handleUpdateCriteria}
                       />
                       {criterias.map((item) => (
-                        <tr>
+                        <tr id={item.id}>
                           <td>{criterias.indexOf(item) + 1}</td>
                           <td>
                             <Icon>{item.icon}</Icon>
@@ -404,7 +500,7 @@ const Admin: React.FC = () => {
 
                     <tbody>
                       {players.map((item) => (
-                        <tr>
+                        <tr id={item.id}>
                           <td>{players.indexOf(item) + 1}</td>
                           <td>
                             {editRow.includes(item.name) ? (
@@ -465,6 +561,76 @@ const Admin: React.FC = () => {
                                 </button>
                               </div>
                             )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </TableContainer>
+              </TabPanel>
+              <TabPanel value={value} index={2}>
+                <TableContainer>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Imagem</th>
+                        <th>Conquista</th>
+                        <th>Descrição</th>
+                        <th>Score</th>
+                        <th>
+                          {' '}
+                          <button type="button" onClick={toggleModal}>
+                            <FiPlusSquare />
+                          </button>
+                        </th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      <ModalNewReward
+                        isOpen={modalOpen}
+                        setIsOpen={toggleModal}
+                        handleAddReward={handleAddReward}
+                      />
+                      <ModalEditReward
+                        isOpen={editModalOpen}
+                        setIsOpen={toggleEditModal}
+                        editingReward={editingReward}
+                        handleUpdateReward={handleUpdateReward}
+                      />
+                      {rewards.map((item) => (
+                        <tr id={item.id}>
+                          <td>{rewards.indexOf(item) + 1}</td>
+                          <td>
+                            <div>
+                              <img
+                                src={require(`../../assets/rewards/${item.icon}.png`)}
+                                alt="recruta"
+                                height="64px"
+                                width="64px"
+                              />
+                            </div>
+                          </td>
+                          <td>{item.title}</td>
+                          <td>{item.description}</td>
+                          <td>{item.score}</td>
+
+                          <td>
+                            <div>
+                              <button
+                                type="button"
+                                onClick={() => handleEditReward(item)}
+                              >
+                                <FiEdit />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteReward(item.id)}
+                              >
+                                <FiTrash />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}

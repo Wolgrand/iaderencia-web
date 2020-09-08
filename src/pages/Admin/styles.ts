@@ -1,4 +1,9 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+
+const iconCSS = css`
+  width: 20px;
+  height: 20px;
+`;
 
 export const Container = styled.div`
   background-color: #312e38;

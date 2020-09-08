@@ -256,9 +256,10 @@ export const Reward = styled.div`
   flex-direction: column;
   font-size: 16px;
   color: #f4ede8;
-  padding-top: 10px;
+  padding-top: 20px;
   text-align: left;
   border-top: 1px solid #999591;
+  margin-bottom: 50px;
 
   > strong {
     color: #fff;
@@ -578,5 +579,48 @@ export const Calendar = styled.aside`
     background: #ff9000 !important;
     border-radius: 10px;
     color: #232129 !important;
+  }
+`;
+
+export const RewardsMain = styled.section`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  font-size: 16px;
+  color: #f4ede8;
+  padding-top: 20px;
+  text-align: left;
+  border-top: 1px solid #999591;
+  margin-bottom: 50px;
+  > strong {
+    color: #fff;
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+`;
+export const RewardsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  list-style: none;
+
+  div {
+    background: #312e38;
+    border: 2px solid #3e3b47;
+    height: 90px;
+    width: 90px;
+
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+  }
+  .selected {
+    opacity: 0.9;
+    border: 2px solid #ff9000;
   }
 `;

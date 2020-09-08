@@ -10,6 +10,7 @@ import { Line } from 'rc-progress';
 import { useToast } from '../../hooks/toast';
 import ToggleSwitch from '../../components/ToggleSwitch';
 import ToggleSwitchDisabled from '../../components/ToggleSwitchDisabled';
+import Badge from '../../components/Badge';
 
 import {
   Container,
@@ -18,6 +19,8 @@ import {
   Profile,
   Content,
   Schedule,
+  RewardsMain,
+  RewardsGrid,
   Calendar,
   Section,
   Avatar,
@@ -40,6 +43,13 @@ interface Criteria {
   icon: string;
   title: string;
 }
+interface Reward {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  score: number;
+}
 
 interface Transaction {
   id: string;
@@ -52,6 +62,30 @@ interface Transaction {
       };
     },
   ];
+}
+
+interface TransactionReward {
+  id: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    avatar: string;
+    score: number;
+    role: string;
+    department: string;
+    avatar_url: string;
+  };
+  reward: {
+    id: string;
+    title: string;
+    description: string;
+    icon: string;
+    score: number;
+  };
+  user_id: string;
+  reward_id: string;
+  score: number;
 }
 
 interface Player {
@@ -77,7 +111,11 @@ const Score: React.FC = () => {
   const [selectedMultiply, setSelectedMultiply] = useState(false);
   const [player, setPlayer] = useState<Player | undefined>();
   const [criterias, setCriterias] = useState<Criteria[]>([]);
+  const [rewards, setRewards] = useState<Reward[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [transactionsRewards, setTransactionsRewards] = useState<
+    TransactionReward[]
+  >([]);
 
   const [selectedCriteria, setSelectedCriteria] = useState<string[]>([]);
 
@@ -92,6 +130,14 @@ const Score: React.FC = () => {
 
     api.get(`/transactions/${id}`).then((response) => {
       setTransactions(response.data);
+    });
+
+    api.get(`/transactions-rewards/${id}`).then((response) => {
+      setTransactionsRewards(response.data);
+    });
+
+    api.get(`rewards/`).then((response) => {
+      setRewards(response.data);
     });
 
     api.get(`/criterias/`).then((response) => {
@@ -141,6 +187,9 @@ const Score: React.FC = () => {
   const toggleMultiply = (): void => {
     setSelectedMultiply(!selectedMultiply);
   };
+
+  const emptyRewardsSpaces = Array(rewards.length - transactionsRewards.length);
+
   const handleSave = (): void | undefined => {
     const newScore = selectedMultiply === true ? multipliedScore : score;
     const newCriteria = [];
@@ -224,7 +273,24 @@ const Score: React.FC = () => {
                 <strong>{player ? player.name : ''}</strong>
                 <p>{player ? player.score : ''} pts</p>
               </PlayerProfile>
+              <RewardsMain>
+                <strong>Conquistas</strong>
 
+                <RewardsGrid>
+                  {transactionsRewards.map((item) => (
+                    <>
+                      <Badge
+                        icon={item.reward.icon}
+                        score={item.reward.score}
+                        key={item.id}
+                        title={item.reward.title}
+                      />
+                    </>
+                  ))}
+
+                  {emptyRewardsSpaces.fill(<div />)}
+                </RewardsGrid>
+              </RewardsMain>
               <Reward>
                 <strong>Recompensas</strong>
                 <p>Caixa de Chocolate - 1000pts</p>
@@ -353,32 +419,6 @@ const Score: React.FC = () => {
                 )}
               </Reward>
             </Avatar>
-
-            {/*               <section>
-                  <span>Conquistas</span>
-                  <ul>
-                    <li />
-                    <li />
-                    <li />
-                    <li />
-                    <li />
-                    <li />
-                    <li />
-                    <li />
-                    <li />
-                    <li />
-                    <li />
-                    <li />
-                    <li />
-                    <li />
-                    <li />
-                    <li />
-                    <li />
-                    <li />
-                    <li />
-                    <li />
-                  </ul>
-                </section> */}
 
             <section>
               <br />
