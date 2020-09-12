@@ -618,6 +618,7 @@ export const RewardsGrid = styled.div`
     align-items: center;
     text-align: center;
     cursor: pointer;
+    
   }
   .selected {
     opacity: 0.9;
