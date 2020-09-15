@@ -10,7 +10,6 @@ import { Line } from 'rc-progress';
 import { useToast } from '../../hooks/toast';
 import ToggleSwitch from '../../components/ToggleSwitch';
 import ToggleSwitchDisabled from '../../components/ToggleSwitchDisabled';
-import Badge from '../../components/Badge';
 import ModalNewBadge from '../../components/ModalNewBadge';
 
 import {
@@ -37,6 +36,8 @@ import FacebookCircularProgress from '../../components/Loading';
 
 import avatarDefaultImg from '../../assets/avatar.png';
 import logo from '../../assets/logo.png';
+import ModalDetailBadge from '../../components/ModalDetailBadge';
+import Tooltip from '../../components/Tooltip';
 
 interface Criteria {
   id: string;
@@ -51,7 +52,6 @@ interface Reward {
   icon: string;
   score: number;
 }
-
 
 interface Transaction {
   id: string;
@@ -122,17 +122,17 @@ const Score: React.FC = () => {
 
   const [selectedCriteria, setSelectedCriteria] = useState<string[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [availableBadges, setAvailableBadges] = useState<Reward[]>([]);
+  const [selectedBadge, setSelectedBadge] = useState<Reward>();
 
   const rank = location.search.split('?rank=');
   const { id } = useParams();
 
   useEffect(() => {
     api.get(`/transactions-rewards/${id}`).then((response) => {
-
       setBadges(response.data);
     });
-
   }, [id]);
 
   useEffect(() => {
@@ -164,8 +164,6 @@ const Score: React.FC = () => {
       (reward) => !badges.some((badge) => reward.id === badge.id),
     );
     setAvailableBadges(list);
-
-
   }, [badges]);
 
   useEffect(() => {
@@ -185,9 +183,12 @@ const Score: React.FC = () => {
 
   transactionsRewards.map((item) => setBadges([...badges, item.reward]));
 
-
   function toggleModal(): void {
     setModalOpen(!modalOpen);
+  }
+
+  function toggleDetailModal(): void {
+    setDetailModalOpen(!detailModalOpen);
   }
 
   const selectedDateasText = useMemo(() => {
@@ -203,9 +204,9 @@ const Score: React.FC = () => {
   }, [selectedDate]);
 
   async function handleAddReward(badge: Reward): Promise<void> {
-    const data = { reward_id: badge.id, user_id: id, score: 0 }
+    const data = { reward_id: badge.id, user_id: id, score: badge.score };
 
-    setBadges([...badges, badge])
+    setBadges([...badges, badge]);
 
     try {
       await api.post('/transactions-rewards', data).then((response) => {
@@ -224,6 +225,11 @@ const Score: React.FC = () => {
       });
     }
   }
+
+  const handleSelectBadge = (badge: Reward): void => {
+    setSelectedBadge(badge);
+    toggleDetailModal();
+  };
 
   const handleSelectItem = (id: string, selectedScore: number): void => {
     const alreadySelected = selectedCriteria.findIndex((item) => item === id);
@@ -247,10 +253,6 @@ const Score: React.FC = () => {
   const toggleMultiply = (): void => {
     setSelectedMultiply(!selectedMultiply);
   };
-
-
-
-
 
   const handleSave = (): void | undefined => {
     const newScore = selectedMultiply === true ? multipliedScore : score;
@@ -330,6 +332,15 @@ const Score: React.FC = () => {
               rewards={rewards}
               availableBadges={availableBadges}
             />
+
+            {selectedBadge && (
+              <ModalDetailBadge
+                isOpen={detailModalOpen}
+                setIsOpen={toggleDetailModal}
+                badge={selectedBadge}
+              />
+            )
+            }
             <Calendar>
               <Avatar>
                 <PlayerProfile>
@@ -349,19 +360,25 @@ const Score: React.FC = () => {
                   <RewardsGrid>
                     {badges.map((item) => (
                       <>
-                        <Badge
-                          icon={item.icon}
-                          score={item.score}
-                          title={item.title}
-                        />
+                        <Tooltip title={`${item.title} - ${item.score}pts`}>
+                          <img
+                            src={require(`../../assets/rewards/${item.icon}.svg`)}
+                            alt={item.title}
+                            height="64px"
+                            width="64px"
+                            onClick={() => handleSelectBadge(item)}
+                          />
+                        </Tooltip>
                       </>
                     ))}
 
-                    {availableBadges.map((item) => (
-                      user.role === 'pmo'
-                        ? (<div key={item.id} onClick={toggleModal} />) :
-                        (<div key={item.id} />)
-                    ))}
+                    {availableBadges.map((item) =>
+                      user.role === 'pmo' ? (
+                        <div key={item.id} onClick={toggleModal} />
+                      ) : (
+                          <div key={item.id} />
+                        ),
+                    )}
                   </RewardsGrid>
                 </RewardsMain>
                 <Reward>

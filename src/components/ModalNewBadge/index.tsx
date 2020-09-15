@@ -1,14 +1,11 @@
-import React, { useRef, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState, FormEvent } from 'react';
 
-import { FiCheckSquare } from 'react-icons/fi';
-import { FormHandles } from '@unform/core';
 
 import { Title, ItemsGrid, Container } from './styles';
 import Modal from '../Modal';
 import Badge from '../Badge';
 import Button from '../Button';
-import Input from '../Input';
-import api from '../../services/api';
+
 
 interface Badge {
   id: string;
@@ -68,10 +65,9 @@ const ModalNewReward: React.FC<ModalProps> = ({
   setIsOpen,
   handleAddBadge,
   availableBadges,
-  badges,
-  rewards,
+
 }) => {
-  const formRef = useRef<FormHandles>(null);
+
   const [selectedBadge, setSelectedBadge] = useState<Badge>();
 
 
@@ -82,10 +78,10 @@ const ModalNewReward: React.FC<ModalProps> = ({
 
 
 
-
-
   const handleSubmit = useCallback(
-    async (badge: Badge) => {
+    async (badge: Badge, event: FormEvent) => {
+      event.preventDefault();
+
       handleAddBadge(badge);
 
       setIsOpen();
@@ -122,7 +118,9 @@ const ModalNewReward: React.FC<ModalProps> = ({
 
       <Container>
         {selectedBadge ? (
-          <Button onClick={() => handleSubmit(selectedBadge)}>
+          <Button
+            onClick={(event: FormEvent) => handleSubmit(selectedBadge, event)}
+          >
             Selecionar
           </Button>
         ) : null}

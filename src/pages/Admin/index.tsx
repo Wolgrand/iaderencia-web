@@ -380,8 +380,8 @@ const Admin: React.FC = () => {
             {user.avatar_url === null ? (
               <img src={avatarDefaultImg} alt={user.name} />
             ) : (
-              <img src={user.avatar_url} alt={user.name} />
-            )}
+                <img src={user.avatar_url} alt={user.name} />
+              )}
 
             <div>
               <span>Bem vindo,</span>
@@ -506,31 +506,31 @@ const Admin: React.FC = () => {
                             {editRow.includes(item.name) ? (
                               <input defaultValue={item.company} />
                             ) : (
-                              item.company
-                            )}
+                                item.company
+                              )}
                           </td>
                           <td>
                             {editRow.includes(item.name) ? (
                               <input defaultValue={item.department} />
                             ) : (
-                              item.department
-                            )}
+                                item.department
+                              )}
                           </td>
 
                           <td>
                             {editRow.includes(item.name) ? (
                               <input defaultValue={item.name} />
                             ) : (
-                              item.name
-                            )}
+                                item.name
+                              )}
                           </td>
 
                           <td>
                             {editRow.includes(item.name) ? (
                               <input defaultValue={item.score} />
                             ) : (
-                              item.score
-                            )}
+                                item.score
+                              )}
                           </td>
 
                           <td>
@@ -549,18 +549,18 @@ const Admin: React.FC = () => {
                                 </button>
                               </div>
                             ) : (
-                              <div>
-                                <button
-                                  type="button"
-                                  onClick={() => handleRowEdition(item.name)}
-                                >
-                                  <FiEdit />
-                                </button>
-                                <button type="button">
-                                  <FiTrash />
-                                </button>
-                              </div>
-                            )}
+                                <div>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRowEdition(item.name)}
+                                  >
+                                    <FiEdit />
+                                  </button>
+                                  <button type="button">
+                                    <FiTrash />
+                                  </button>
+                                </div>
+                              )}
                           </td>
                         </tr>
                       ))}
@@ -605,7 +605,7 @@ const Admin: React.FC = () => {
                           <td>
                             <div>
                               <img
-                                src={require(`../../assets/rewards/${item.icon}.png`)}
+                                src={require(`../../assets/rewards/${item.icon}.svg`)}
                                 alt="recruta"
                                 height="64px"
                                 width="64px"

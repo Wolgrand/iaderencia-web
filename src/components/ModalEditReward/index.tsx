@@ -2,7 +2,7 @@ import React, { useRef, useCallback } from 'react';
 
 import { FiCheckSquare } from 'react-icons/fi';
 import { FormHandles } from '@unform/core';
-import Icon from '@material-ui/core/Icon';
+
 import { Form } from './styles';
 import Modal from '../Modal';
 import Input from '../Input';
