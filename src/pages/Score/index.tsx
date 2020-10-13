@@ -4,7 +4,8 @@ import { Link, useLocation, useParams, useHistory } from 'react-router-dom';
 import { isToday, format, parseISO } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 import 'react-day-picker/lib/style.css';
-import { FiPower, FiSettings } from 'react-icons/fi';
+import { FiPower, FiSettings, FiLoader } from 'react-icons/fi';
+
 import Icon from '@material-ui/core/Icon';
 import { Line } from 'rc-progress';
 import { useToast } from '../../hooks/toast';
@@ -109,6 +110,7 @@ const Score: React.FC = () => {
   const [multipliedScore, setMultipliedScore] = useState(0);
   const [toggleDisabled, setToggleDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [saveLoading, setSaveLoading] = useState(false);
 
   const [selectedMultiply, setSelectedMultiply] = useState(false);
   const [player, setPlayer] = useState<Player | undefined>();
@@ -255,6 +257,7 @@ const Score: React.FC = () => {
   };
 
   const handleSave = (): void | undefined => {
+    setSaveLoading(true);
     const newScore = selectedMultiply === true ? multipliedScore : score;
     const newCriteria = [];
 
@@ -278,6 +281,7 @@ const Score: React.FC = () => {
       });
 
       history.push('/dashboard');
+      setSaveLoading(false);
     });
   };
 
@@ -302,8 +306,8 @@ const Score: React.FC = () => {
             {user.avatar_url === null ? (
               <img src={avatarDefaultImg} alt={user.name} />
             ) : (
-                <img src={user.avatar_url} alt={user.name} />
-              )}
+              <img src={user.avatar_url} alt={user.name} />
+            )}
 
             <div>
               <span>Bem vindo,</span>
@@ -323,268 +327,273 @@ const Score: React.FC = () => {
           <p>Carregando...</p>
         </div>
       ) : (
-          <Content>
-            <ModalNewBadge
-              isOpen={modalOpen}
-              setIsOpen={toggleModal}
-              handleAddBadge={handleAddReward}
-              badges={badges}
-              rewards={rewards}
-              availableBadges={availableBadges}
+        <Content>
+          <ModalNewBadge
+            isOpen={modalOpen}
+            setIsOpen={toggleModal}
+            handleAddBadge={handleAddReward}
+            badges={badges}
+            rewards={rewards}
+            availableBadges={availableBadges}
+          />
+
+          {selectedBadge && (
+            <ModalDetailBadge
+              isOpen={detailModalOpen}
+              setIsOpen={toggleDetailModal}
+              badge={selectedBadge}
             />
+          )}
+          <Calendar>
+            <Avatar>
+              <PlayerProfile>
+                {player && player.avatar_url ? (
+                  <img src={player.avatar_url} alt={player.name} />
+                ) : (
+                  <img src={avatarDefaultImg} alt="avatar" />
+                )}
 
-            {selectedBadge && (
-              <ModalDetailBadge
-                isOpen={detailModalOpen}
-                setIsOpen={toggleDetailModal}
-                badge={selectedBadge}
-              />
-            )
-            }
-            <Calendar>
-              <Avatar>
-                <PlayerProfile>
-                  {player && player.avatar_url ? (
-                    <img src={player.avatar_url} alt={player.name} />
-                  ) : (
-                      <img src={avatarDefaultImg} alt="avatar" />
-                    )}
+                <span>{rank}</span>
+                <strong>{player ? player.name : ''}</strong>
+                <p>{player ? player.score : ''} pts</p>
+              </PlayerProfile>
+              <RewardsMain>
+                <strong>Conquistas</strong>
 
-                  <span>{rank}</span>
-                  <strong>{player ? player.name : ''}</strong>
-                  <p>{player ? player.score : ''} pts</p>
-                </PlayerProfile>
-                <RewardsMain>
-                  <strong>Conquistas</strong>
-
-                  <RewardsGrid>
-                    {badges.map((item) => (
-                      <>
-                        <Tooltip title={`${item.title} - ${item.score}pts`}>
-                          <img
-                            src={require(`../../assets/rewards/${item.icon}.svg`)}
-                            alt={item.title}
-                            height="64px"
-                            width="64px"
-                            onClick={() => handleSelectBadge(item)}
-                          />
-                        </Tooltip>
-                      </>
-                    ))}
-
-                    {availableBadges.map((item) =>
-                      user.role === 'pmo' ? (
-                        <div key={item.id} onClick={toggleModal} />
-                      ) : (
-                          <div key={item.id} />
-                        ),
-                    )}
-                  </RewardsGrid>
-                </RewardsMain>
-                <Reward>
-                  <strong>Recompensas</strong>
-                  <p>Caixa de Chocolate - 1000pts</p>
-                  {player && player.score / 1000 <= 1 ? (
-                    <div>
-                      <Line
-                        percent={(player.score / 1000) * 100}
-                        strokeWidth={6}
-                        trailWidth={5}
-                        strokeColor="#ff9000"
-                        strokeLinecap="round"
-                      />
-                      <p>{Math.ceil((player.score / 1000) * 100)}%</p>
-                    </div>
-                  ) : (
-                      <div>
-                        <Line
-                          percent={100}
-                          strokeWidth={6}
-                          trailWidth={5}
-                          strokeColor="#27ae60"
-                          strokeLinecap="round"
+                <RewardsGrid>
+                  {badges.map((item) => (
+                    <>
+                      <Tooltip title={`${item.title} - ${item.score}pts`}>
+                        <img
+                          src={require(`../../assets/rewards/${item.icon}.svg`)}
+                          alt={item.title}
+                          height="64px"
+                          width="64px"
+                          onClick={() => handleSelectBadge(item)}
                         />
-                        <p>100%</p>
-                      </div>
-                    )}
+                      </Tooltip>
+                    </>
+                  ))}
 
-                  <p>Pen Drive - 2500pts</p>
-                  {player && player.score / 2500 <= 1 ? (
-                    <div>
-                      <Line
-                        percent={(player.score / 2500) * 100}
-                        strokeWidth={6}
-                        trailWidth={5}
-                        strokeColor="#ff9000"
-                        strokeLinecap="round"
-                      />
-                      <p>{Math.ceil((player.score / 2500) * 100)}%</p>
-                    </div>
-                  ) : (
-                      <div>
-                        <Line
-                          percent={100}
-                          strokeWidth={6}
-                          trailWidth={5}
-                          strokeColor="#27ae60"
-                          strokeLinecap="round"
-                        />
-                        <p>100%</p>
-                      </div>
-                    )}
-
-                  <p>Livro Técnico - 3500pts</p>
-                  {player && player.score / 3500 <= 1 ? (
-                    <div>
-                      <Line
-                        percent={(player.score / 3500) * 100}
-                        strokeWidth={6}
-                        trailWidth={5}
-                        strokeColor="#ff9000"
-                        strokeLinecap="round"
-                      />
-                      <p>{Math.ceil((player.score / 3500) * 100)}%</p>
-                    </div>
-                  ) : (
-                      <div>
-                        <Line
-                          percent={100}
-                          strokeWidth={6}
-                          trailWidth={5}
-                          strokeColor="#27ae60"
-                          strokeLinecap="round"
-                        />
-                        <p>100%</p>
-                      </div>
-                    )}
-
-                  <p>Fone de Ouvido - 5000pts</p>
-                  {player && player.score / 5000 <= 1 ? (
-                    <div>
-                      <Line
-                        percent={(player.score / 5000) * 100}
-                        strokeWidth={6}
-                        trailWidth={5}
-                        strokeColor="#ff9000"
-                        strokeLinecap="round"
-                      />
-                      <p>{Math.ceil((player.score / 5000) * 100)}%</p>
-                    </div>
-                  ) : (
-                      <div>
-                        <Line
-                          percent={100}
-                          strokeWidth={6}
-                          trailWidth={5}
-                          strokeColor="#27ae60"
-                          strokeLinecap="round"
-                        />
-                        <p>100%</p>
-                      </div>
-                    )}
-
-                  <p>Leitor de Livros - 7500pts</p>
-                  {player && player.score / 7500 <= 1 ? (
-                    <div>
-                      <Line
-                        percent={(player.score / 7500) * 100}
-                        strokeWidth={6}
-                        trailWidth={5}
-                        strokeColor="#ff9000"
-                        strokeLinecap="round"
-                      />
-                      <p>{Math.ceil((player.score / 7500) * 100)}%</p>
-                    </div>
-                  ) : (
-                      <div>
-                        <Line
-                          percent={100}
-                          strokeWidth={6}
-                          trailWidth={5}
-                          strokeColor="#27ae60"
-                          strokeLinecap="round"
-                        />
-                        <p>100%</p>
-                      </div>
-                    )}
-                </Reward>
-              </Avatar>
-
-              <section>
-                <br />
-              </section>
-            </Calendar>
-            <Schedule>
-              <h1>Adicionar Pontuação</h1>
-
-              <p>
-                {isToday(selectedDate) && <span>Hoje</span>}
-                <span>{selectedDateasText}</span>
-                <span>{selectedWeekDay}</span>
-              </p>
-
-              {user.role === 'pmo' ? (
-                <Section>
-                  <strong>
-                    Selecionar Critério
-                  {selectedMultiply === true ? (
-                      <p>Pontuação: {Math.ceil(multipliedScore)}</p>
+                  {availableBadges.map((item) =>
+                    user.role === 'pmo' ? (
+                      <div key={item.id} onClick={toggleModal} />
                     ) : (
-                        <p>Pontuação: {score}</p>
-                      )}
-                    <div>
-                      {score > 0 ? (
-                        <ToggleSwitch toggleMultiply={toggleMultiply} />
-                      ) : (
-                          <ToggleSwitchDisabled toggleMultiply={toggleMultiply} />
-                        )}
+                      <div key={item.id} />
+                    ),
+                  )}
+                </RewardsGrid>
+              </RewardsMain>
+              <Reward>
+                <strong>Recompensas</strong>
+                <p>Caixa de Chocolate - 1000pts</p>
+                {player && player.score / 1000 <= 1 ? (
+                  <div>
+                    <Line
+                      percent={(player.score / 1000) * 100}
+                      strokeWidth={6}
+                      trailWidth={5}
+                      strokeColor="#ff9000"
+                      strokeLinecap="round"
+                    />
+                    <p>{Math.ceil((player.score / 1000) * 100)}%</p>
+                  </div>
+                ) : (
+                  <div>
+                    <Line
+                      percent={100}
+                      strokeWidth={6}
+                      trailWidth={5}
+                      strokeColor="#27ae60"
+                      strokeLinecap="round"
+                    />
+                    <p>100%</p>
+                  </div>
+                )}
 
-                      <p>1,5x</p>
-                    </div>
+                <p>Pen Drive - 2500pts</p>
+                {player && player.score / 2500 <= 1 ? (
+                  <div>
+                    <Line
+                      percent={(player.score / 2500) * 100}
+                      strokeWidth={6}
+                      trailWidth={5}
+                      strokeColor="#ff9000"
+                      strokeLinecap="round"
+                    />
+                    <p>{Math.ceil((player.score / 2500) * 100)}%</p>
+                  </div>
+                ) : (
+                  <div>
+                    <Line
+                      percent={100}
+                      strokeWidth={6}
+                      trailWidth={5}
+                      strokeColor="#27ae60"
+                      strokeLinecap="round"
+                    />
+                    <p>100%</p>
+                  </div>
+                )}
+
+                <p>Livro Técnico - 3500pts</p>
+                {player && player.score / 3500 <= 1 ? (
+                  <div>
+                    <Line
+                      percent={(player.score / 3500) * 100}
+                      strokeWidth={6}
+                      trailWidth={5}
+                      strokeColor="#ff9000"
+                      strokeLinecap="round"
+                    />
+                    <p>{Math.ceil((player.score / 3500) * 100)}%</p>
+                  </div>
+                ) : (
+                  <div>
+                    <Line
+                      percent={100}
+                      strokeWidth={6}
+                      trailWidth={5}
+                      strokeColor="#27ae60"
+                      strokeLinecap="round"
+                    />
+                    <p>100%</p>
+                  </div>
+                )}
+
+                <p>Fone de Ouvido - 5000pts</p>
+                {player && player.score / 5000 <= 1 ? (
+                  <div>
+                    <Line
+                      percent={(player.score / 5000) * 100}
+                      strokeWidth={6}
+                      trailWidth={5}
+                      strokeColor="#ff9000"
+                      strokeLinecap="round"
+                    />
+                    <p>{Math.ceil((player.score / 5000) * 100)}%</p>
+                  </div>
+                ) : (
+                  <div>
+                    <Line
+                      percent={100}
+                      strokeWidth={6}
+                      trailWidth={5}
+                      strokeColor="#27ae60"
+                      strokeLinecap="round"
+                    />
+                    <p>100%</p>
+                  </div>
+                )}
+
+                <p>Leitor de Livros - 7500pts</p>
+                {player && player.score / 7500 <= 1 ? (
+                  <div>
+                    <Line
+                      percent={(player.score / 7500) * 100}
+                      strokeWidth={6}
+                      trailWidth={5}
+                      strokeColor="#ff9000"
+                      strokeLinecap="round"
+                    />
+                    <p>{Math.ceil((player.score / 7500) * 100)}%</p>
+                  </div>
+                ) : (
+                  <div>
+                    <Line
+                      percent={100}
+                      strokeWidth={6}
+                      trailWidth={5}
+                      strokeColor="#27ae60"
+                      strokeLinecap="round"
+                    />
+                    <p>100%</p>
+                  </div>
+                )}
+              </Reward>
+            </Avatar>
+
+            <section>
+              <br />
+            </section>
+          </Calendar>
+          <Schedule>
+            <h1>Adicionar Pontuação</h1>
+
+            <p>
+              {isToday(selectedDate) && <span>Hoje</span>}
+              <span>{selectedDateasText}</span>
+              <span>{selectedWeekDay}</span>
+            </p>
+
+            {user.role === 'pmo' ? (
+              <Section>
+                <strong>
+                  Selecionar Critério
+                  {selectedMultiply === true ? (
+                    <p>Pontuação: {Math.ceil(multipliedScore)}</p>
+                  ) : (
+                    <p>Pontuação: {score}</p>
+                  )}
+                  <div>
+                    {score > 0 ? (
+                      <ToggleSwitch toggleMultiply={toggleMultiply} />
+                    ) : (
+                      <ToggleSwitchDisabled toggleMultiply={toggleMultiply} />
+                    )}
+
+                    <p>1,5x</p>
+                  </div>
+                  {saveLoading ? (
+                    <Button>
+                      <div className="loader" />
+                    </Button>
+                  ) : (
                     <Button type="submit" onClick={handleSave}>
                       Salvar
-                  </Button>
-                  </strong>
+                    </Button>
+                  )}
+                </strong>
 
-                  <ItemsGrid>
-                    {criterias.map((criteria) => (
-                      <li
-                        key={criteria.id}
-                        onClick={() =>
-                          handleSelectItem(criteria.id, criteria.score)
-                        }
-                        className={
-                          selectedCriteria.includes(criteria.id) ? 'selected' : ''
-                        }
-                      >
-                        <Icon>{criteria.icon}</Icon>
-                        <span>{criteria.title}</span>
-                      </li>
-                    ))}
-                  </ItemsGrid>
-                </Section>
-              ) : null}
-
-              <Section>
-                <strong>Histórico de Pontuação</strong>
-
-                {transactions.map((transaction) => (
-                  <div key={transaction.id}>
-                    {' '}
-                    <h3>
-                      {format(parseISO(transaction.created_at), 'dd/MM/yyyy')}
-                    </h3>
-                    {transaction.transaction_criterias.map((criteria) => (
-                      <p key={Math.random().toString(36).substring(7)}>
-                        {criteria.criteria.title} - {criteria.criteria.score}pts
-                      </p>
-                    ))}
-                  </div>
-                ))}
+                <ItemsGrid>
+                  {criterias.map((criteria) => (
+                    <li
+                      key={criteria.id}
+                      onClick={() =>
+                        handleSelectItem(criteria.id, criteria.score)
+                      }
+                      className={
+                        selectedCriteria.includes(criteria.id) ? 'selected' : ''
+                      }
+                    >
+                      <Icon>{criteria.icon}</Icon>
+                      <span>{criteria.title}</span>
+                    </li>
+                  ))}
+                </ItemsGrid>
               </Section>
-            </Schedule>
-          </Content>
-        )}
+            ) : null}
+
+            <Section>
+              <strong>Histórico de Pontuação</strong>
+
+              {transactions.map((transaction) => (
+                <div key={transaction.id}>
+                  {' '}
+                  <h3>
+                    {format(parseISO(transaction.created_at), 'dd/MM/yyyy')}
+                  </h3>
+                  {transaction.transaction_criterias.map((criteria) => (
+                    <p key={Math.random().toString(36).substring(7)}>
+                      {criteria.criteria.title} - {criteria.criteria.score}pts
+                    </p>
+                  ))}
+                </div>
+              ))}
+            </Section>
+          </Schedule>
+        </Content>
+      )}
     </Container>
   );
 };
