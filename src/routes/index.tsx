@@ -11,6 +11,7 @@ import Dashboard from '../pages/Dashboard';
 import Profile from '../pages/Profile';
 import Score from '../pages/Score';
 import Admin from '../pages/Admin';
+import Message from '../pages/Message';
 
 const Routes: React.FC = () => (
   <Switch>
@@ -22,6 +23,7 @@ const Routes: React.FC = () => (
     <Route path="/dashboard" component={Dashboard} isPrivate />
     <Route path="/profile" component={Profile} isPrivate />
     <Route path="/admin" component={Admin} isPrivate />
+    <Route path="/message" component={Message} isPrivate />
   </Switch>
 );
 

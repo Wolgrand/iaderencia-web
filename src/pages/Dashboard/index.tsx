@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { isToday, format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 
@@ -43,6 +43,7 @@ interface Department {
 
 const Dashboard: React.FC = () => {
   const { signOut, user } = useAuth();
+  const history = useHistory();
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -82,6 +83,10 @@ const Dashboard: React.FC = () => {
       locale: ptBR,
     });
   }, [selectedDate]);
+
+  if (user.role === 'player') {
+    history.push('/message');
+  }
 
   return (
     <Container>
@@ -126,6 +131,7 @@ const Dashboard: React.FC = () => {
             <p>Carregando...</p>
           </div>
         ) : (
+
           <Schedule>
             <h1>Ranking Gerentes de Projetos</h1>
             <p>
@@ -229,6 +235,7 @@ const Dashboard: React.FC = () => {
             </Section>
           </Schedule>
         )}
+        
       </Content>
     </Container>
   );
